@@ -1,0 +1,16 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "jxx7yKu2UZ15BixSpUUVk"
+uri = "file://SCHOOL_MANAGEMENT_COMPLETION_TASK.md"
+type = "text"
+title = "تكليف إكمال نظام إدارة المدارس"
+description = "نطاق التنفيذ الكامل: إعادة التصميم، التوافق مع الهاتف والدسكتوب، الوظائف، قاعدة البيانات، الصلاحيات، ومراحل التنفيذ ومعايير القبول."
+logical_id = "3fe547d4-44d9-4466-ae00-89434ff96493"
+content_hash = "sha256:c3e865ce31b4c3ccc3842776f01204900df6b722ce6e3df9f2345870f4e0651c"
+size = 24077
+mtime_ms = 1791390109300
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8f75397f-6df5-4fb1-9d79-1114e0a8b6cf/3fe547d4-44d9-4466-ae00-89434ff96493/c5c91ca1-818a-44f3-be49-5dce627e300e"
+storage_version_token = "1791390131943236"
+content_type = "text/markdown"
