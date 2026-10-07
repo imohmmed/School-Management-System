@@ -170,6 +170,15 @@ paths:
       tags: [students]
       summary: Search and filter the student register
       parameters:
+        - name: academicYear
+          in: query
+          schema:
+            type: string
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [name, code, newest]
         - name: search
           in: query
           schema:
@@ -215,6 +224,58 @@ paths:
                 $ref: "#/components/schemas/Student"
         "400":
           $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /students/register:
+    get:
+      operationId: getStudentRegister
+      tags: [students]
+      summary: Search the student register with server-side pagination
+      parameters:
+        - name: academicYear
+          in: query
+          schema:
+            type: string
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [name, code, newest]
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: classId
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+        - name: active
+          in: query
+          schema:
+            type: boolean
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 25
+      responses:
+        "200":
+          description: Paginated student records
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StudentRegister"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -565,6 +626,11 @@ paths:
       tags: [grades]
       summary: List saved grades for an exam or class
       parameters:
+        - name: studentId
+          in: query
+          schema:
+            type: integer
+            minimum: 1
         - name: examId
           in: query
           schema:
@@ -620,6 +686,11 @@ paths:
       tags: [attendance]
       summary: List attendance records by date and class
       parameters:
+        - name: studentId
+          in: query
+          schema:
+            type: integer
+            minimum: 1
         - name: from
           in: query
           schema:
@@ -673,6 +744,36 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
+  /attendance/bulk:
+    post:
+      operationId: recordClassAttendance
+      tags: [attendance]
+      summary: Atomically mark the class's unrecorded students present without overwriting existing statuses
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClassAttendanceInput"
+      responses:
+        "200":
+          description: Committed class attendance
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [savedCount, skippedCount]
+                properties:
+                  savedCount:
+                    type: integer
+                  skippedCount:
+                    type: integer
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
   /attendance/{id}:
     delete:
       operationId: deleteAttendance
@@ -695,6 +796,10 @@ paths:
       tags: [reports]
       summary: Build an attendance report for a date range
       parameters:
+        - name: academicYear
+          in: query
+          schema:
+            type: string
         - name: from
           in: query
           required: true
@@ -731,6 +836,10 @@ paths:
       tags: [reports]
       summary: Build a grade report
       parameters:
+        - name: academicYear
+          in: query
+          schema:
+            type: string
         - name: sessionId
           in: query
           schema:
@@ -902,6 +1011,24 @@ paths:
             minimum: 1
             maximum: 100
             default: 30
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: entity
+          in: query
+          schema:
+            type: string
+        - name: action
+          in: query
+          schema:
+            type: string
       responses:
         "200":
           description: Recent audit records
@@ -950,6 +1077,16 @@ components:
           schema:
             $ref: "#/components/schemas/ApiError"
   schemas:
+    ClassAttendanceInput:
+      type: object
+      required: [classId, attendanceDate]
+      properties:
+        classId:
+          type: integer
+          minimum: 1
+        attendanceDate:
+          type: string
+          format: date
     ApiError:
       type: object
       properties:
@@ -970,7 +1107,7 @@ components:
       required: [initialized]
     Role:
       type: string
-      enum: [administrator, teacher, viewer, pending]
+      enum: [administrator, registrar, teacher, viewer, pending]
     UserStatus:
       type: string
       enum: [active, invited, suspended]
@@ -1083,6 +1220,20 @@ components:
         active:
           type: boolean
       required: [fullName, studentCode, classId, active]
+    StudentRegister:
+      type: object
+      properties:
+        records:
+          type: array
+          items:
+            $ref: "#/components/schemas/Student"
+        total:
+          type: integer
+        page:
+          type: integer
+        pageSize:
+          type: integer
+      required: [records, total, page, pageSize]
     Subject:
       type: object
       properties:
@@ -1324,14 +1475,14 @@ components:
           maxLength: 160
         role:
           type: string
-          enum: [administrator, teacher, viewer]
+          enum: [administrator, registrar, teacher, viewer]
       required: [email, fullName, role]
     UpdateUserInput:
       type: object
       properties:
         role:
           type: string
-          enum: [administrator, teacher, viewer]
+          enum: [administrator, registrar, teacher, viewer]
         status:
           type: string
           enum: [active, suspended]

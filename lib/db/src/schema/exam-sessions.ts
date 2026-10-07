@@ -15,9 +15,8 @@ export const examSessionsTable = pgTable(
 );
 
 export const insertExamSessionSchema = createInsertSchema(examSessionsTable).omit({
-  id: true,
   createdAt: true,
   updatedAt: true,
 });
-export type InsertExamSession = typeof insertExamSessionSchema._type;
+export type InsertExamSession = typeof examSessionsTable.$inferInsert;
 export type ExamSession = typeof examSessionsTable.$inferSelect;

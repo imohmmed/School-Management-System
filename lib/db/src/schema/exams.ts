@@ -16,13 +16,15 @@ export const examsTable = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
   },
-  (table) => [uniqueIndex("exams_session_class_subject_uq").on(table.sessionId, table.classId, table.subjectId)],
+  (table) => [
+    uniqueIndex("exams_session_class_subject_uq").on(table.sessionId, table.classId, table.subjectId),
+    uniqueIndex("exams_session_class_date_uq").on(table.sessionId, table.classId, table.examDate),
+  ],
 );
 
 export const insertExamSchema = createInsertSchema(examsTable).omit({
-  id: true,
   createdAt: true,
   updatedAt: true,
 });
-export type InsertExam = typeof insertExamSchema._type;
+export type InsertExam = typeof examsTable.$inferInsert;
 export type Exam = typeof examsTable.$inferSelect;

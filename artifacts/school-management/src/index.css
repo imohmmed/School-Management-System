@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@500;700;800&display=swap');
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @plugin "@tailwindcss/typography";
@@ -78,70 +79,70 @@
   --elevate-1: rgba(0, 0, 0, 0.03);
   --elevate-2: rgba(0, 0, 0, 0.08);
 
-  --background: red; /*replace with H S L */
+  --background: 42 33% 96%;
 
-  --foreground: red; /*replace with H S L */
+  --foreground: 215 40% 14%;
 
-  --border: red; /*replace with H S L */
+  --border: 38 20% 85%;
 
-  --card: red; /*replace with H S L */
+  --card: 40 45% 99%;
 
-  --card-foreground: red; /*replace with H S L */
+  --card-foreground: 215 40% 14%;
 
-  --card-border: red; /*replace with H S L */
+  --card-border: 38 22% 86%;
 
-  --sidebar: red; /*replace with H S L */
+  --sidebar: 207 58% 14%;
 
-  --sidebar-foreground: red; /*replace with H S L */
+  --sidebar-foreground: 40 30% 88%;
 
-  --sidebar-border: red; /*replace with H S L */
+  --sidebar-border: 207 40% 22%;
 
-  --sidebar-primary: red; /*replace with H S L */
+  --sidebar-primary: 36 88% 56%;
 
-  --sidebar-primary-foreground: red; /*replace with H S L */
+  --sidebar-primary-foreground: 207 58% 12%;
 
-  --sidebar-accent: red; /*replace with H S L */
+  --sidebar-accent: 207 46% 22%;
 
-  --sidebar-accent-foreground: red; /*replace with H S L */
+  --sidebar-accent-foreground: 40 40% 96%;
 
-  --sidebar-ring: red; /*replace with H S L */
+  --sidebar-ring: 36 88% 56%;
 
-  --popover: red; /*replace with H S L */
+  --popover: 40 45% 99%;
 
-  --popover-foreground: red; /*replace with H S L */
+  --popover-foreground: 215 40% 14%;
 
-  --popover-border: red; /*replace with H S L */
+  --popover-border: 38 22% 86%;
 
-  --primary: red; /*replace with H S L */
+  --primary: 205 64% 24%;
 
-  --primary-foreground: red; /*replace with H S L */
+  --primary-foreground: 42 40% 97%;
 
-  --secondary: red; /*replace with H S L */
+  --secondary: 38 35% 90%;
 
-  --secondary-foreground: red; /*replace with H S L */
+  --secondary-foreground: 215 40% 18%;
 
-  --muted: red; /*replace with H S L */
+  --muted: 38 25% 92%;
 
-  --muted-foreground: red; /*replace with H S L */
+  --muted-foreground: 215 14% 38%;
 
-  --accent: red; /*replace with H S L */
+  --accent: 36 88% 56%;
 
-  --accent-foreground: red; /*replace with H S L */
+  --accent-foreground: 215 40% 14%;
 
-  --destructive: red; /*replace with H S L */
+  --destructive: 6 68% 42%;
 
-  --destructive-foreground: red; /*replace with H S L */
+  --destructive-foreground: 42 40% 97%;
 
-  --input: red; /*replace with H S L */
-  --ring: red; /*replace with H S L */
-  --chart-1: red; /*replace with H S L */
-  --chart-2: red; /*replace with H S L */
-  --chart-3: red; /*replace with H S L */
-  --chart-4: red; /*replace with H S L */
-  --chart-5: red; /*replace with H S L */
+  --input: 36 16% 72%;
+  --ring: 205 64% 34%;
+  --chart-1: 205 64% 30%;
+  --chart-2: 36 88% 52%;
+  --chart-3: 160 50% 30%;
+  --chart-4: 6 68% 46%;
+  --chart-5: 260 30% 45%;
 
-  --app-font-sans: 'Inter', sans-serif;
-  --app-font-serif: Georgia, serif;
+  --app-font-sans: 'IBM Plex Sans Arabic', 'Noto Kufi Arabic', system-ui, sans-serif;
+  --app-font-serif: 'Noto Kufi Arabic', serif;
   --app-font-mono: Menlo, monospace;
   --radius: 0.5rem; /* 8px */
   --shadow-2xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0); /*replace with H S L */
@@ -227,68 +228,68 @@
   --elevate-1: rgba(255, 255, 255, 0.04);
   --elevate-2: rgba(255, 255, 255, 0.09);
 
-  --background: red; /*replace with H S L */
+  --background: 42 33% 96%;
 
-  --foreground: red; /*replace with H S L */
+  --foreground: 215 40% 14%;
 
-  --border: red; /*replace with H S L */
+  --border: 38 20% 85%;
 
-  --card: red; /*replace with H S L */
+  --card: 40 45% 99%;
 
-  --card-foreground: red; /*replace with H S L */
+  --card-foreground: 215 40% 14%;
 
-  --card-border: red; /*replace with H S L */
+  --card-border: 38 22% 86%;
 
-  --sidebar: red; /*replace with H S L */
+  --sidebar: 207 58% 14%;
 
-  --sidebar-foreground: red; /*replace with H S L */
+  --sidebar-foreground: 40 30% 88%;
 
-  --sidebar-border: red; /*replace with H S L */
+  --sidebar-border: 207 40% 22%;
 
-  --sidebar-primary: red; /*replace with H S L */
+  --sidebar-primary: 36 88% 56%;
 
-  --sidebar-primary-foreground: red; /*replace with H S L */
+  --sidebar-primary-foreground: 207 58% 12%;
 
-  --sidebar-accent: red; /*replace with H S L */
+  --sidebar-accent: 207 46% 22%;
 
-  --sidebar-accent-foreground: red; /*replace with H S L */
+  --sidebar-accent-foreground: 40 40% 96%;
 
-  --sidebar-ring: red; /*replace with H S L */
+  --sidebar-ring: 36 88% 56%;
 
-  --popover: red; /*replace with H S L */
+  --popover: 40 45% 99%;
 
-  --popover-foreground: red; /*replace with H S L */
+  --popover-foreground: 215 40% 14%;
 
-  --popover-border: red; /*replace with H S L */
+  --popover-border: 38 22% 86%;
 
-  --primary: red; /*replace with H S L */
+  --primary: 205 64% 24%;
 
-  --primary-foreground: red; /*replace with H S L */
+  --primary-foreground: 42 40% 97%;
 
-  --secondary: red; /*replace with H S L */
+  --secondary: 38 35% 90%;
 
-  --secondary-foreground: red; /*replace with H S L */
+  --secondary-foreground: 215 40% 18%;
 
-  --muted: red; /*replace with H S L */
+  --muted: 38 25% 92%;
 
-  --muted-foreground: red; /*replace with H S L */
+  --muted-foreground: 215 14% 38%;
 
-  --accent: red; /*replace with H S L */
+  --accent: 36 88% 56%;
 
-  --accent-foreground: red; /*replace with H S L */
+  --accent-foreground: 215 40% 14%;
 
-  --destructive: red; /*replace with H S L */
+  --destructive: 6 68% 42%;
 
-  --destructive-foreground: red; /*replace with H S L */
+  --destructive-foreground: 42 40% 97%;
 
   /* Used as the border around inputs. Dark mode: Should be a border that is light enough to have high contrast when rendered on a --card background. More contrast than standard --border */
-  --input: red; /*replace with H S L */
-  --ring: red; /*replace with H S L */
-  --chart-1: red; /*replace with H S L */
-  --chart-2: red; /*replace with H S L */
-  --chart-3: red; /*replace with H S L */
-  --chart-4: red; /*replace with H S L */
-  --chart-5: red; /*replace with H S L */
+  --input: 36 16% 72%;
+  --ring: 205 64% 34%;
+  --chart-1: 205 64% 30%;
+  --chart-2: 36 88% 52%;
+  --chart-3: 160 50% 30%;
+  --chart-4: 6 68% 46%;
+  --chart-5: 260 30% 45%;
 
   --shadow-2xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0);
   --shadow-xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0);
@@ -430,4 +431,54 @@
   .border.hover-elevate:not(.no-hover-interaction-elevate)::after {
     inset: -1px;
   }
+}
+
+:root{--success:160 55% 26%;--warn:36 90% 36%;--radius:0.75rem}
+html{scroll-behavior:smooth}
+body{overflow-x:hidden;font-size:15px;line-height:1.6}
+.font-display{font-family:'Noto Kufi Arabic','IBM Plex Sans Arabic',sans-serif}
+.num{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate;display:inline-block}
+:focus-visible{outline:2px solid hsl(var(--ring));outline-offset:2px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:2.625rem;padding:0 1.1rem;border-radius:.7rem;font-weight:600;font-size:.9rem;border:1px solid transparent;cursor:pointer;transition:background .15s,transform .1s,border-color .15s;white-space:nowrap}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-primary{background:hsl(var(--primary));color:hsl(var(--primary-foreground))}
+.btn-primary:hover:not(:disabled){background:hsl(205 64% 31%)}
+.btn-accent{background:hsl(var(--accent));color:hsl(var(--accent-foreground))}
+.btn-accent:hover:not(:disabled){background:hsl(36 88% 62%)}
+.btn-outline{background:hsl(var(--card));border-color:hsl(var(--input));color:hsl(var(--foreground))}
+.btn-outline:hover:not(:disabled){background:hsl(var(--muted))}
+.btn-ghost{background:transparent;color:hsl(var(--foreground))}
+.btn-ghost:hover:not(:disabled){background:hsl(var(--muted))}
+.btn-danger{background:hsl(var(--destructive));color:hsl(var(--destructive-foreground))}
+.btn-danger:hover:not(:disabled){background:hsl(6 68% 36%)}
+.btn-sm{min-height:2.25rem;padding:0 .8rem;font-size:.82rem;border-radius:.6rem}
+.btn-icon{width:2.25rem;min-height:2.25rem;padding:0}
+.inp{width:100%;min-height:2.75rem;border:1px solid hsl(var(--input));background:hsl(var(--card));border-radius:.7rem;padding:.5rem .8rem;font-size:1rem;color:hsl(var(--foreground))}
+textarea.inp{min-height:5rem}
+.inp:disabled{background:hsl(var(--muted));opacity:.8}
+.inp[aria-invalid=true]{border-color:hsl(var(--destructive))}
+.panel{background:hsl(var(--card));border:1px solid hsl(var(--card-border));border-radius:1rem;box-shadow:0 1px 0 hsl(38 30% 80% / .5)}
+.tbl-wrap{overflow-x:auto;border-radius:1rem;border:1px solid hsl(var(--card-border));background:hsl(var(--card))}
+.tbl{width:100%;border-collapse:collapse;font-size:.9rem}
+.tbl th{background:hsl(38 30% 93%);text-align:right;font-weight:600;padding:.7rem 1rem;white-space:nowrap;color:hsl(var(--muted-foreground));font-size:.8rem}
+.tbl td{padding:.7rem 1rem;border-top:1px solid hsl(var(--border));vertical-align:middle}
+.tbl tbody tr:hover{background:hsl(38 40% 96%)}
+.bd{display:inline-flex;align-items:center;gap:.3rem;border-radius:999px;padding:.15rem .65rem;font-size:.75rem;font-weight:600;white-space:nowrap}
+.bd-ok{background:hsl(160 40% 90%);color:hsl(160 60% 20%)}
+.bd-warn{background:hsl(38 90% 88%);color:hsl(30 85% 26%)}
+.bd-bad{background:hsl(6 70% 92%);color:hsl(6 70% 34%)}
+.bd-mute{background:hsl(var(--muted));color:hsl(var(--muted-foreground))}
+.bd-info{background:hsl(205 55% 90%);color:hsl(205 64% 22%)}
+.pattern{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cpath d='M24 2l6 10 12 2-8 9 2 12-12-5-12 5 2-12-8-9 12-2z' fill='none' stroke='%23f0b043' stroke-opacity='.18' stroke-width='1'/%3E%3C/svg%3E")}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.rise{animation:rise .6s cubic-bezier(.2,.7,.2,1) both}
+@media (prefers-reduced-motion:reduce){.rise{animation:none}html{scroll-behavior:auto}}
+.print-only{display:none}
+@media print{
+  body *{visibility:hidden!important}
+  .print-area,.print-area *{visibility:visible!important}
+  .print-only{display:block}
+  .print-area{position:absolute;left:0;top:0;width:100%;background:white;color:black;padding:8mm}
+  html,body{height:auto!important;background:white}
 }

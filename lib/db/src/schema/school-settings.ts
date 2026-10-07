@@ -12,5 +12,5 @@ export const schoolSettingsTable = pgTable("school_settings", {
 });
 
 export const insertSchoolSettingsSchema = createInsertSchema(schoolSettingsTable).omit({ updatedAt: true });
-export type InsertSchoolSettings = typeof insertSchoolSettingsSchema._type;
+export type InsertSchoolSettings = typeof schoolSettingsTable.$inferInsert;
 export type SchoolSettingsRecord = typeof schoolSettingsTable.$inferSelect;

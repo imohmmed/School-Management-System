@@ -16,6 +16,6 @@ export const gradesTable = pgTable(
   (table) => [uniqueIndex("grades_exam_student_uq").on(table.examId, table.studentId)],
 );
 
-export const insertGradeSchema = createInsertSchema(gradesTable).omit({ id: true, updatedAt: true });
-export type InsertGrade = typeof insertGradeSchema._type;
+export const insertGradeSchema = createInsertSchema(gradesTable).omit({ updatedAt: true });
+export type InsertGrade = typeof gradesTable.$inferInsert;
 export type Grade = typeof gradesTable.$inferSelect;

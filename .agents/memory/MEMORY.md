@@ -1,0 +1,2 @@
+- [API generation](api-generation.md) — request bodies should use named schemas to avoid Zod/TypeScript duplicate operation-body exports.
+- [Integration testing](integration-testing.md) — complete Clerk test handshakes; compile Node tests outside node_modules.

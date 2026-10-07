@@ -1,45 +1,44 @@
-# [Project name]
+# نظام إدارة المدارس
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+تطبيق عربي RTL لإدارة الصفوف والطلاب والمواد والامتحانات والدرجات والحضور والتقارير، مُعاد بناؤه من ملفات المستخدم الأصلية.
 
-## Run & Operate
+## التشغيل
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
-- `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- API: `pnpm --filter @workspace/api-server run dev`
+- Web: `pnpm --filter @workspace/school-management run dev`
+- المعاينة الأصلية للوحة التحكم داخل sandbox مرجع بصري فقط، لا بيانات مدرسة.
+- الخدمات تعتمد `PORT` المخصص لها؛ الواجهة تعتمد `BASE_PATH`.
+- PostgreSQL الحالي عبر `@workspace/db` هو مصدر البيانات. لا تستبدله بقاعدة أخرى.
 
-## Stack
+## خريطة المشروع
 
-- pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
+- `SCHOOL_MANAGEMENT_COMPLETION_TASK.md`: نطاق العمل ومعايير القبول.
+- `SCHOOL_SYSTEM_GUIDE.md`: الإعداد والصلاحيات وقواعد البيانات والنسخ والاستعادة.
+- `artifacts/school-management/src`: الواجهة، التنقل، صفحات النظام والهوية العربية.
+- `artifacts/api-server/src`: المصادقة ومسارات API والتحقق والتدقيق.
+- `lib/db/src/schema`: مخطط Drizzle.
+- `lib/api-spec/openapi.yaml`: مصدر عقد API.
+- `lib/api-client-react` و`lib/api-zod`: مولّدان؛ غيّر العقد ثم نفّذ codegen، ولا تعدّل مخرجات التوليد يدويًا.
+- `attached_assets/School_1791389658185.zip`: المصدر الأصلي محفوظ.
 
-## Where things live
+## التحقق
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+```sh
+pnpm -w run typecheck:libs
+pnpm --filter @workspace/api-server run typecheck
+pnpm --filter @workspace/school-management run typecheck
+pnpm --filter @workspace/api-server run test:integration
+pnpm --filter @workspace/api-spec run codegen
+```
 
-## Architecture decisions
+اختبار التكامل ينشئ ويحذف سجلاته الصناعية فقط. لا تشغّله على الإنتاج.
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+## قرارات المنتج والسلامة
 
-## Product
-
-_Describe the high-level user-facing capabilities of this app once they exist._
-
-## User preferences
-
-_Populate as you build — explicit user instructions worth remembering across sessions._
-
-## Gotchas
-
-_Populate as you build — sharp edges, "always run X before Y" rules._
-
-## Pointers
-
-- See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
+- المصادقة مُدارة عبر Clerk؛ لا تخزين لكلمات مرور محلية أو بيانات دخول ثابتة.
+- أول حساب موثّق يطالب بإعداد المدير عند خلو حسابات المدرسة؛ سجّل حساب المالك قبل مشاركة التطبيق.
+- الانضمام لاحقًا بدعوة أو صلاحية يمنحها المدير؛ الصلاحيات تتحقق في الخادم.
+- أرشفة الطلاب تحفظ التاريخ؛ الحضور يحتفظ بصف التسجيل والدرجات بصف الامتحان.
+- نتائج النجاح تعتمد معيار المادة، وإعدادات الدرجات قيم أولية وليست تعديلًا رجعيًا.
+- لا حذف واسع أو ترحيل إنتاج أو استيراد بيانات طلاب حقيقية دون موافقة.
+- جميع الشروحات والواجهة باللغة العربية، مع دعم الهاتف والتابلت والكمبيوتر وأيقونات موحدة.

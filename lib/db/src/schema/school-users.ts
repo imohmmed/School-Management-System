@@ -4,6 +4,7 @@ import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
 export const schoolUsersTable = pgTable("school_users", {
   id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   clerkUserId: text("clerk_user_id").unique(),
+  clerkInvitationId: text("clerk_invitation_id"),
   email: text("email").notNull().unique(),
   fullName: text("full_name").notNull(),
   role: text("role").notNull(),
@@ -17,5 +18,5 @@ export const insertSchoolUserSchema = createInsertSchema(schoolUsersTable).omit(
   createdAt: true,
   updatedAt: true,
 });
-export type InsertSchoolUser = typeof insertSchoolUserSchema._type;
+export type InsertSchoolUser = typeof schoolUsersTable.$inferInsert;
 export type SchoolUserRecord = typeof schoolUsersTable.$inferSelect;

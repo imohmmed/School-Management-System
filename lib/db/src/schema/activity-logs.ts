@@ -12,6 +12,6 @@ export const activityLogsTable = pgTable("activity_logs", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
-export const insertActivityLogSchema = createInsertSchema(activityLogsTable).omit({ id: true, createdAt: true });
-export type InsertActivityLog = typeof insertActivityLogSchema._type;
+export const insertActivityLogSchema = createInsertSchema(activityLogsTable).omit({ createdAt: true });
+export type InsertActivityLog = typeof activityLogsTable.$inferInsert;
 export type ActivityLog = typeof activityLogsTable.$inferSelect;

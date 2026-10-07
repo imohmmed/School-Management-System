@@ -17,9 +17,8 @@ export const classesTable = pgTable(
 );
 
 export const insertClassSchema = createInsertSchema(classesTable).omit({
-  id: true,
   createdAt: true,
   updatedAt: true,
 });
-export type InsertClass = typeof insertClassSchema._type;
+export type InsertClass = typeof classesTable.$inferInsert;
 export type SchoolClass = typeof classesTable.$inferSelect;

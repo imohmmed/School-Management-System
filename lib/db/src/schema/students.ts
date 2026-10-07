@@ -22,9 +22,8 @@ export const studentsTable = pgTable(
 );
 
 export const insertStudentSchema = createInsertSchema(studentsTable).omit({
-  id: true,
   createdAt: true,
   updatedAt: true,
 });
-export type InsertStudent = typeof insertStudentSchema._type;
+export type InsertStudent = typeof studentsTable.$inferInsert;
 export type Student = typeof studentsTable.$inferSelect;

@@ -18,9 +18,8 @@ export const subjectsTable = pgTable(
 );
 
 export const insertSubjectSchema = createInsertSchema(subjectsTable).omit({
-  id: true,
   createdAt: true,
   updatedAt: true,
 });
-export type InsertSubject = typeof insertSubjectSchema._type;
+export type InsertSubject = typeof subjectsTable.$inferInsert;
 export type Subject = typeof subjectsTable.$inferSelect;
