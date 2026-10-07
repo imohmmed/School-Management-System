@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام ادارة المدارس | سجل التغييرات</title>
+    <!-- استدعاء Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: { DEFAULT: '#1E293B', dark: '#0F172A', light: '#334155' }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- خط Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style> 
+        body { font-family: 'Cairo', sans-serif; } 
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 flex h-screen overflow-hidden text-right" dir="rtl">
+
+    <!-- الغطاء الخلفي عند فتح القائمة -->
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-20 hidden transition-opacity"></div>
+
+    <!-- الشريط الجانبي (Sidebar) الموحد -->
+    <aside id="sidebar" class="fixed inset-y-0 right-0 z-30 w-72 bg-slate-900 text-slate-300 flex flex-col justify-between shadow-xl transform translate-x-full transition-transform duration-300 ease-in-out border-l border-slate-800">
+        <div>
+            <!-- عنوان النظام وزر الإغلاق -->
+            <div class="p-5 text-center border-b border-slate-800 relative">
+                <button onclick="toggleSidebar()" class="absolute left-4 top-4 text-slate-400 hover:text-white text-lg p-1 rounded-lg hover:bg-slate-800 transition">✕</button>
+                <div class="w-10 h-10 bg-blue-600 rounded-xl mx-auto mb-2 flex items-center justify-center text-white font-bold">|||</div>
+                <h2 class="text-sm font-bold text-white">نظام إدارة المدارس</h2>
+                <p class="text-[11px] text-slate-400 mt-1">المبرمجة: نور الهدى رحيم</p>
+            </div>
+            <!-- القائمة الجانبية -->
+            <nav class="p-3 space-y-1 text-xs overflow-y-auto max-h-[calc(100vh-140px)]">
+                <a href="Dashboard.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-300 transition">لوحة التحكم</a>
+                <a href="stud.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-300 transition">الطلاب</a>
+                <a href="table.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-300 transition">الجدول الامتحاني</a>
+                <a href="Barcode.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-300 transition">طباعة باركودات</a>
+                <a href="Grades.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-300 transition">إدخال الدرجات</a>
+                <a href="Absence.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-300 transition">الغيابات</a>
+                <a href="reports.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-300 transition">التقارير</a>
+                <a href="settings.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-300 transition">الإعدادات</a>
+                <a href="users.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-300 transition">المستخدمين</a>
+                <a href="logs.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-blue-600 text-white font-bold transition">سجل التغييرات</a>
+            </nav>
+        </div>
+        <div class="p-4 border-t border-slate-800 text-[11px] text-slate-500 text-center">
+            الإصدار 1.0.0 © 2026 جميع الحقوق محفوظة
+        </div>
+    </aside>
+
+    <!-- محتوى الصفحة الرئيسي -->
+    <div class="flex-1 flex flex-col h-screen overflow-y-auto">
+        
+        <!-- الشريط العلوي -->
+        <header class="bg-white px-6 py-3.5 border-b border-slate-200 flex justify-between items-center sticky top-0 z-10 shadow-2xs">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSidebar()" class="p-2.5 text-slate-700 hover:bg-slate-100 rounded-xl transition border border-slate-200 text-lg leading-none" title="القائمة الرئيسية">☰</button>
+                <div>
+                    <h1 class="text-sm font-bold text-slate-900">سجل التغييرات</h1>
+                    <p class="text-[11px] text-slate-500">عرض وتتبع جميع التغييرات في النظام</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4 text-xs">
+                <button onclick="alert('تم تسجيل الخروج')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-2 border border-slate-200">
+                    <span>تسجيل خروج</span>
+                </button>
+                <div class="flex items-center gap-2 border-r pr-4 border-slate-200">
+                    <span class="text-slate-600 font-semibold">مرحباً، <span class="font-bold text-slate-900">Administrator - Admin</span></span>
+                    <div class="w-9 h-9 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold">A</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- جسم المحتوى -->
+        <main class="p-6 flex-1 flex flex-col gap-5 overflow-y-auto w-full">
+            
+            <!-- شريط حالة التنيبه -->
+            <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-3 rounded-2xl text-xs font-semibold shadow-2xs">
+                تم العثور على 538 سجل
+            </div>
+
+            <!-- قسم سجل الأحداث والفلترة -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-2xs overflow-hidden flex flex-col flex-1">
+                
+                <!-- رأس الجدول وشريط الفلترة -->
+                <div class="p-4 border-b border-slate-200 bg-slate-50/50 flex flex-wrap items-center justify-between gap-4">
+                    <h3 class="text-xs font-bold text-slate-900 border-r-4 border-blue-600 pr-2">سجل الأحداث</h3>
+                    
+                    <!-- أدوات الفلترة والبحث -->
+                    <div class="flex flex-wrap items-center gap-2 text-xs">
+                        <div class="flex items-center gap-1.5 bg-white border border-slate-200 px-3 py-1.5 rounded-xl">
+                            <span class="text-slate-500 font-semibold">من:</span>
+                            <input type="text" value="2026-01-16" class="w-24 bg-transparent focus:outline-none font-mono text-center">
+                        </div>
+                        <div class="flex items-center gap-1.5 bg-white border border-slate-200 px-3 py-1.5 rounded-xl">
+                            <span class="text-slate-500 font-semibold">إلى:</span>
+                            <input type="text" value="2026-01-23" class="w-24 bg-transparent focus:outline-none font-mono text-center">
+                        </div>
+                        <div class="flex items-center bg-white border border-slate-200 rounded-xl overflow-hidden">
+                            <input type="text" placeholder="بحث..." class="px-3 py-1.5 bg-transparent focus:outline-none text-xs w-32">
+                        </div>
+                        <button onclick="alert('جاري تطبيق الفلترة...')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-xl font-bold transition shadow-2xs">بحث</button>
+                    </div>
+                </div>
+                
+                <!-- جدول البيانات -->
+                <div class="overflow-x-auto flex-1">
+                    <table class="w-full text-right text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-600 border-b border-slate-200 font-bold">
+                                <th class="py-3.5 px-4">الوقت</th>
+                                <th class="py-3.5 px-4">المستخدم</th>
+                                <th class="py-3.5 px-4">الإجراء</th>
+                                <th class="py-3.5 px-4">القسم</th>
+                                <th class="py-3.5 px-4">التفاصيل</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-slate-700 font-medium">
+                            <tr class="hover:bg-slate-50/80 transition">
+                                <td class="py-3.5 px-4 font-mono text-slate-500">2026-01-23 20:16:51</td>
+                                <td class="py-3.5 px-4 font-bold text-slate-900">Administrator</td>
+                                <td class="py-3.5 px-4"><span class="bg-blue-50 text-blue-700 border border-blue-100 px-2.5 py-1 rounded-lg font-bold text-[11px]">إنشاء مستخدم</span></td>
+                                <td class="py-3.5 px-4">المستخدمون</td>
+                                <td class="py-3.5 px-4 text-slate-500 font-mono text-[11px]">بواسطة: Administrator | المستخدم: علي أحمد | الصلاحية: DataEntry | مقفل: نعم</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50/80 transition">
+                                <td class="py-3.5 px-4 font-mono text-slate-500">2026-01-23 20:16:02</td>
+                                <td class="py-3.5 px-4 font-bold text-slate-900">Administrator</td>
+                                <td class="py-3.5 px-4"><span class="bg-indigo-50 text-indigo-700 border border-indigo-100 px-2.5 py-1 rounded-lg font-bold text-[11px]">إنشاء نسخة احتياطية</span></td>
+                                <td class="py-3.5 px-4">قاعدة البيانات</td>
+                                <td class="py-3.5 px-4 text-slate-500 font-mono text-[11px]">بواسطة: Administrator | الملف: غير معروض</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50/80 transition">
+                                <td class="py-3.5 px-4 font-mono text-slate-500">2026-01-23 20:13:03</td>
+                                <td class="py-3.5 px-4 font-bold text-slate-900">Administrator</td>
+                                <td class="py-3.5 px-4"><span class="bg-amber-50 text-amber-700 border border-amber-100 px-2.5 py-1 rounded-lg font-bold text-[11px]">تسجيل غياب</span></td>
+                                <td class="py-3.5 px-4">الغيابات</td>
+                                <td class="py-3.5 px-4 text-slate-500 font-mono text-[11px]">بواسطة: Administrator | الطالب: أبا الحسن بهاء عباس جاسم | الصف: الأول المتوسط | المادة: التربية الفنية | تاريخ الغياب: 2026-01-24</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50/80 transition">
+                                <td class="py-3.5 px-4 font-mono text-slate-500">2026-01-23 20:13:02</td>
+                                <td class="py-3.5 px-4 font-bold text-slate-900">Administrator</td>
+                                <td class="py-3.5 px-4"><span class="bg-amber-50 text-amber-700 border border-amber-100 px-2.5 py-1 rounded-lg font-bold text-[11px]">تسجيل غياب</span></td>
+                                <td class="py-3.5 px-4">الغيابات</td>
+                                <td class="py-3.5 px-4 text-slate-500 font-mono text-[11px]">بواسطة: Administrator | الطالب: أبا الحسن بهاء عباس جاسم | الصف: الأول المتوسط | المادة: التربية الاسلامية | تاريخ الغياب: 2026-01-24</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50/80 transition">
+                                <td class="py-3.5 px-4 font-mono text-slate-500">2026-01-23 20:12:42</td>
+                                <td class="py-3.5 px-4 font-bold text-slate-900">Administrator</td>
+                                <td class="py-3.5 px-4"><span class="bg-emerald-50 text-emerald-700 border border-emerald-100 px-2.5 py-1 rounded-lg font-bold text-[11px]">تعديل درجة</span></td>
+                                <td class="py-3.5 px-4">الدرجات</td>
+                                <td class="py-3.5 px-4 text-slate-500 font-mono text-[11px]">بواسطة: Administrator | الطالب: ابا الفضل غالب علي بهير | الصف: الأول المتوسط | المادة: الرياضيات | الدرجة القديمة: 100 | الدرجة الجديدة: 30 | رقم الرزمة: 5 | الباركود: 1001</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50/80 transition">
+                                <td class="py-3.5 px-4 font-mono text-slate-500">2026-01-23 20:11:34</td>
+                                <td class="py-3.5 px-4 font-bold text-slate-900">Administrator</td>
+                                <td class="py-3.5 px-4"><span class="bg-emerald-50 text-emerald-700 border border-emerald-100 px-2.5 py-1 rounded-lg font-bold text-[11px]">إضافة درجة</span></td>
+                                <td class="py-3.5 px-4">الدرجات</td>
+                                <td class="py-3.5 px-4 text-slate-500 font-mono text-[11px]">بواسطة: Administrator | الطالب: ابا الفضل غالب علي بهير | الصف: الأول المتوسط | المادة: الرياضيات | الدرجة: 100 | رقم الرزمة: 5 | الباركود: 1001</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50/80 transition">
+                                <td class="py-3.5 px-4 font-mono text-slate-500">2026-01-23 20:11:08</td>
+                                <td class="py-3.5 px-4 font-bold text-slate-900">Administrator</td>
+                                <td class="py-3.5 px-4"><span class="bg-emerald-50 text-emerald-700 border border-emerald-100 px-2.5 py-1 rounded-lg font-bold text-[11px]">تعديل درجة</span></td>
+                                <td class="py-3.5 px-4">الدرجات</td>
+                                <td class="py-3.5 px-4 text-slate-500 font-mono text-[11px]">بواسطة: Administrator | الطالب: ابا الفضل غالب علي بهير | الصف: الأول المتوسط | المادة: الرياضيات | الدرجة القديمة: 80 | الدرجة الجديدة: 50 | رقم الرزمة: 5 | الباركود: 1000</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+    <!-- السكربتات البرمجية للتفاعل -->
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            
+            if (sidebar.classList.contains('translate-x-full')) {
+                sidebar.classList.remove('translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>

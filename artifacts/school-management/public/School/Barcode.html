@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام ادارة المدارس | طباعة وإدارة الباركودات </title>
+    <!-- استدعاء Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: { DEFAULT: '#1E3A8A', dark: '#0F172A', light: '#3B82F6' }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- خط Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style> body { font-family: 'Cairo', sans-serif; } </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen p-4 flex flex-col" dir="rtl">
+
+    <!-- الغطاء الخلفي عند فتح القائمة -->
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-20 hidden transition-opacity"></div>
+
+    <!-- الشريط الجانبي (Sidebar) الموحد -->
+    <aside id="sidebar" class="fixed inset-y-0 right-0 z-30 w-72 bg-slate-900 text-slate-300 flex flex-col justify-between shadow-xl transform translate-x-full transition-transform duration-300 ease-in-out border-l border-slate-800">
+        <div>
+            <!-- عنوان النظام وزر الإغلاق -->
+            <div class="p-5 text-center border-b border-slate-800 relative">
+                <button onclick="toggleSidebar()" class="absolute left-4 top-4 text-slate-400 hover:text-white text-lg p-1 rounded-lg hover:bg-slate-800 transition">✕</button>
+                <div class="w-10 h-10 bg-blue-600 rounded-xl mx-auto mb-2 flex items-center justify-center text-white font-bold">|||</div>
+                <h2 class="text-sm font-bold text-white">نظام إدارة المدارس</h2>
+                <p class="text-[11px] text-slate-400 mt-1">المبرمجة: نور الهدى رحيم</p>
+            </div>
+            <!-- القائمة الجانبية -->
+            <nav class="p-3 space-y-1 text-xs overflow-y-auto max-h-[calc(100vh-140px)]">
+                <a href="Dashboard.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-300 transition">لوحة التحكم</a>
+                <a href="stud.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-300 transition">الطلاب</a>
+                <a href="table.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-300 transition">الجدول الامتحاني</a>
+                <a href="Barcode.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-blue-600 text-white font-bold transition">طباعة باركودات</a>
+                <a href="Grades.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-300 transition">إدخال الدرجات</a>
+                <a href="Absence.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-300 transition">الغيابات</a>
+                <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-300 transition">التقارير</a>
+                <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-300 transition">الإعدادات</a>
+                <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-300 transition">المستخدمين</a>
+                <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-300 transition">سجل التغييرات</a>
+            </nav>
+        </div>
+        <div class="p-4 border-t border-slate-800 text-[11px] text-slate-500 text-center">
+            الإصدار 1.0.0 © 2026 جميع الحقوق محفوظة
+        </div>
+    </aside>
+
+    <!-- رأس الصفحة الرئيسي (أضيف له زر القائمة ☰) -->
+    <header class="bg-white px-6 py-4 rounded-2xl shadow-sm border border-slate-200 flex justify-between items-center mb-4">
+        <div class="flex items-center gap-3">
+            <button onclick="toggleSidebar()" class="p-2.5 text-slate-700 hover:bg-slate-100 rounded-xl transition border border-slate-200 text-lg leading-none" title="القائمة الرئيسية">☰</button>
+            <div>
+                <h1 class="text-base font-bold text-slate-900">وحدة طباعة وإدارة الباركودات الامتحانية</h1>
+                <p class="text-xs text-slate-500">نظام متكامل لإدارة بيانات الطلاب وتوليد الباركودات</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+           
+        </div>
+    </header>
+
+    <!-- ================= الواجهة الأولى: إدارة وتوليد الباركودات الأساسية ================= -->
+    <div id="main-view" class="flex-1 flex flex-col gap-4">
+        
+        <!-- إعدادات التوليد -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+            <h3 class="text-xs font-bold text-slate-900 border-b pb-2">
+                الإعدادات الأساسية لتوليد الرزمة
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs items-end">
+                <div>
+                    <label class="block font-semibold text-slate-600 mb-1">الجلسة الامتحانية</label>
+                    <select class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
+                        <option>نصف السنة - 2026-2025</option>
+                        <option>نهاية السنة - 2026-2025</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-600 mb-1">الصف الدراسي</label>
+                    <select class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
+                        <option>الأول المتوسط</option>
+                        <option>الثاني المتوسط</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-600 mb-1">ترتيب الطالب</label>
+                    <select class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
+                        <option>حسب رقم الجلوس</option>
+                        <option>حسب الأبجدي</option>
+                    </select>
+                </div>
+                <div>
+                    <button onclick="generateBarcodes()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl font-semibold shadow-sm transition">توليد الباركودات</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- جدول البيانات -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex-1 flex flex-col gap-3">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-xs font-bold text-slate-900">
+                    جدول معاينة الباركودات والطلاب
+                </h3>
+                <span id="status-badge" class="bg-amber-50 text-amber-700 px-3 py-1 rounded-xl text-[11px] font-bold">بانتظار التوليد</span>
+            </div>
+
+            <div class="overflow-x-auto flex-1">
+                <table class="w-full text-right text-xs">
+                    <thead>
+                        <tr class="bg-slate-50 text-slate-500 border-b">
+                            <th class="p-2.5">التسلسل</th>
+                            <th class="p-2.5">اسم الطالب</th>
+                            <th class="p-2.5">الصف</th>
+                            <th class="p-2.5">الشعبة</th>
+                            <th class="p-2.5">رقم الجلوس</th>
+                            <th class="p-2.5">الباركود</th>
+                            <th class="p-2.5">المادة</th>
+                            <th class="p-2.5">ترتيب</th>
+                        </tr>
+                    </thead>
+                    <tbody id="barcodes-tbody" class="divide-y divide-slate-100 font-medium">
+                        <tr>
+                            <td class="p-6 text-slate-400 text-center" colspan="8">اضغط على زر "توليد الباركودات" في الأعلى لعرض البيانات...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex justify-between items-center pt-2 border-t text-xs text-slate-500">
+                <span id="rows-count">Rows: 0 | Missing Barcode: 0</span>
+                <button onclick="switchToPrintView()" class="bg-amber-500 text-slate-900 px-4 py-2 rounded-xl font-bold hover:bg-amber-600 transition">الانتقال لصفحة المعاينة والطباعة</button>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- ================= الواجهة الثانية الجديدة: المعاينة والإعدادات والإحداثيات (مطابقة تماماً للصور) ================= -->
+    <div id="print-view" class="flex-1 flex flex-col gap-4 hidden">
+        
+        <!-- رأس الواجهة الثانية -->
+        <div class="bg-slate-900 text-white px-6 py-4 rounded-2xl flex justify-between items-center shadow">
+            <div class="flex items-center gap-3">
+                <div>
+                    <h2 class="text-sm font-bold">معاينة وطباعة الليبلات</h2>
+                    <p class="text-[11px] text-slate-400">قم بضبط الإعدادات ثم اضغط طباعة</p>
+                </div>
+            </div>
+            <button onclick="switchToMainView()" class="bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 px-4 py-2 rounded-xl text-xs font-bold transition">
+                العودة للواجهة الرئيسية
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            
+            <!-- العمود الأيمن: المعاينة الحية لليبلات (كما في الصورة اليسرى) -->
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex flex-col gap-3">
+                <div class="flex justify-between items-center text-xs text-slate-600 border-b pb-2 font-bold">
+                    <span>راجع الليبلات قبل الطباعة للتأكد من صحتها</span>
+                    <div class="flex items-center gap-2">
+                        <span class="bg-white px-2 py-1 border rounded shadow-2xs">📄</span>
+                        <span class="bg-white px-2 py-1 border rounded shadow-2xs">🔍</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-3 items-center overflow-y-auto max-h-[650px] p-2">
+                    <!-- ليبل متكرر للمعاينة -->
+                    <div class="w-full h-[110px] bg-white border border-slate-300 rounded-lg p-2.5 shadow-2xs flex flex-col justify-between">
+                        <div class="flex justify-between items-start text-[11px] font-bold text-slate-900 border-b pb-1">
+                            <span>ابو الحسن بهاء عباس حا...</span>
+                            <span class="text-slate-500 font-normal">الأول المتوسط | الرياضيات</span>
+                        </div>
+                        <div class="flex justify-center items-center my-auto">
+                            <div class="tracking-widest font-mono text-base font-black text-slate-900">|||||||||||||</div>
+                        </div>
+                        <div class="text-[9px] text-center text-slate-400">ID: 1020</div>
+                    </div>
+
+                    <div class="w-full h-[110px] bg-white border border-slate-300 rounded-lg p-2.5 shadow-2xs flex flex-col justify-between">
+                        <div class="flex justify-between items-start text-[11px] font-bold text-slate-900 border-b pb-1">
+                            <span>ابو الحسن بهاء عباس حا...</span>
+                            <span class="text-slate-500 font-normal">الأول المتوسط | الاسلامية</span>
+                        </div>
+                        <div class="flex justify-center items-center my-auto">
+                            <div class="tracking-widest font-mono text-base font-black text-slate-900">|||||||||||||</div>
+                        </div>
+                        <div class="text-[9px] text-center text-slate-400">ID: 1020</div>
+                    </div>
+
+                    <div class="w-full h-[110px] bg-white border border-slate-300 rounded-lg p-2.5 shadow-2xs flex flex-col justify-between">
+                        <div class="flex justify-between items-start text-[11px] font-bold text-slate-900 border-b pb-1">
+                            <span>ابو الحسن بهاء عباس حا...</span>
+                            <span class="text-slate-500 font-normal">الأول المتوسط | التربية الفنية</span>
+                        </div>
+                        <div class="flex justify-center items-center my-auto">
+                            <div class="tracking-widest font-mono text-base font-black text-slate-900">|||||||||||||</div>
+                        </div>
+                        <div class="text-[9px] text-center text-slate-400">ID: 1020</div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center text-xs text-slate-500 pt-2 border-t">
+                    <span>الصفحة 1 من 41</span>
+                    <input type="text" placeholder="Type text to find" class="bg-white border rounded px-2 py-1 text-xs w-48">
+                </div>
+            </div>
+
+
+            <!-- العمود الأيسر: إعدادات الطباعة، المعاينة، والإحداثيات (مطابق تماماً للترتيب في الصور 11، 12، 13) -->
+            <div class="space-y-3">
+                
+                <!-- رأس إعدادات الطباعة -->
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 space-y-3 text-xs">
+                    
+                    <!-- قسم طباعة الآن -->
+                    <div class="bg-emerald-50 border border-emerald-200 p-3.5 rounded-xl space-y-2">
+                        <button onclick="printNow()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold shadow-sm transition flex justify-center items-center gap-2 text-xs">
+                            طباعة الآن
+                        </button>
+                        <div class="space-y-1 text-emerald-900 text-[11px]">
+                            <label class="flex items-center gap-1.5 font-semibold">
+                                <input type="checkbox" checked class="accent-emerald-600 rounded"> طباعة سريعة بتقنية TSPL
+                            </label>
+                            <p class="text-emerald-700 mr-5">تقنية TSPL أسرع وأفضل للطابعات الحرارية</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-slate-700 font-medium">
+                        جاهز للطباعة. عدد الليبلات بالمعاينة: 410
+                    </div>
+
+                    <!-- قسم المعاينة (زر معاينة كاملة + حفظ الإعدادات) -->
+                    <div class="border-t pt-3 space-y-2">
+                        <div class="flex justify-between items-center font-bold text-slate-900">
+                            <span>المعاينة</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="alert('تم حفظ الإعدادات بنجاح')" class="flex-1 bg-amber-400 hover:bg-amber-500 text-slate-900 py-2.5 rounded-xl font-bold transition">
+                                حفظ الإعدادات
+                            </button>
+                            <button class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl font-bold transition flex flex-col items-center justify-center leading-tight">
+                                <span>معاينة كاملة</span>
+                            </button>
+                        </div>
+                        <div class="text-[11px] text-slate-500 space-y-0.5 pt-1">
+                            <p>• معاينة كاملة: عرض جميع الليبلات</p>
+                            <p>• معاينة سريعة: عرض ليبل واحد فقط للتجربة</p>
+                        </div>
+                    </div>
+
+                    <!-- 1. الإعدادات الأساسية -->
+                    <div class="border-t pt-3 space-y-3">
+                        <div class="flex justify-between items-center font-bold text-slate-900 cursor-pointer">
+                            <span>الإعدادات الأساسية</span>
+                            <span>^</span>
+                        </div>
+
+                        <!-- أبعاد الليبل -->
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2">
+                            <span class="font-bold text-slate-800 block">أبعاد الليبل</span>
+                            <div class="grid grid-cols-3 gap-2">
+                                <div>
+                                    <label class="block text-slate-500 mb-1">العرض (مم)</label>
+                                    <input type="number" value="50" class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-center font-bold">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-500 mb-1">الارتفاع (مم)</label>
+                                    <input type="number" value="25" class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-center font-bold">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-500 mb-1">المسافة بين الليبلات (مم)</label>
+                                    <input type="number" value="2" class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-center font-bold">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- إعدادات جودة الطباعة -->
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2">
+                            <span class="font-bold text-slate-800 block">إعدادات جودة الطباعة</span>
+                            <div class="grid grid-cols-3 gap-2">
+                                <div>
+                                    <label class="block text-slate-500 mb-1">دقة الطباعة (نقطة/بوصة)</label>
+                                    <input type="number" value="203" class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-center font-bold">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-500 mb-1">سرعة الطباعة (1-10)</label>
+                                    <input type="number" value="4" class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-center font-bold">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-500 mb-1">كثافة الحبر (0-15)</label>
+                                    <input type="number" value="8" class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-center font-bold">
+                                </div>
+                            </div>
+                            <div class="bg-blue-50 text-blue-800 p-2 rounded-lg text-[11px] mt-1">
+                                نصيحة: ابدأ بالقيم الافتراضية، ثم اضبط الكثافة والسرعة حسب نوع طابعتك ونوع ورق الليبل.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. الإعدادات المتقدمة (صورة 12) -->
+                    <div class="border-t pt-3 space-y-3">
+                        <div class="flex justify-between items-center font-bold text-slate-900 cursor-pointer">
+                            <span>الإعدادات المتقدمة</span>
+                            <span>^</span>
+                        </div>
+
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-3">
+                            <span class="font-bold text-slate-800 block">الموضع والاتجاه</span>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-slate-500 mb-1">اتجاه الطباعة (0 أو 1)</label>
+                                    <input type="number" value="0" class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-center">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-500 mb-1">تدوير الليبل</label>
+                                    <select class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs">
+                                        <option>بدون تدوير (°0)</option>
+                                        <option>90 درجة</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-2">
+                                <div>
+                                    <label class="block text-slate-500 mb-1">إزاحة أفقية X (مم)</label>
+                                    <input type="number" value="0" class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-center">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-500 mb-1">إزاحة عمودية Y (مم)</label>
+                                    <input type="number" value="0" class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-center">
+                                </div>
+                                <div class="flex items-center pt-5">
+                                    <label class="flex items-center gap-1 font-semibold text-slate-700 text-[11px]">
+                                        <input type="checkbox" class="accent-blue-600 rounded"> انعكاس مرآة
+                                    </label>
+                                </div>
+                            </div>
+
+                            <span class="font-bold text-slate-800 block pt-1">خيارات الألوان والتباين</span>
+                            <div class="space-y-1.5 text-[11px]">
+                                <label class="flex items-center gap-1.5 font-semibold text-slate-700">
+                                    <input type="checkbox" checked class="accent-blue-600 rounded"> عكس الألوان (حل مشكلة كله أسود)
+                                </label>
+                                <label class="flex items-center gap-1.5 font-semibold text-slate-700">
+                                    <input type="checkbox" class="accent-blue-600 rounded"> LSB First (إذا الباركود معكوس أو مخربط)
+                                </label>
+                            </div>
+
+                            <div>
+                                <label class="block text-slate-500 mb-1">عتبة التحويل (0-255)</label>
+                                <input type="number" value="160" class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-center">
+                            </div>
+
+                            <div class="bg-amber-50 text-amber-800 p-2 rounded-lg text-[10px] border border-amber-200">
+                                تنبيه: غير هذه الإعدادات فقط إذا واجهت مشاكل في الطباعة.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. إعدادات محتوى الليبل (النصوص والمواضع) (صورة 13) -->
+                    <div class="border-t pt-3 space-y-3">
+                        <div class="flex justify-between items-center font-bold text-slate-900 cursor-pointer">
+                            <span>إعدادات محتوى الليبل (النصوص والمواضع)</span>
+                            <span>^</span>
+                        </div>
+
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-3">
+                            <div class="bg-blue-50 text-blue-800 p-2.5 rounded-lg text-[10px] leading-relaxed">
+                                <p class="font-bold mb-1">شرح الإحداثيات:</p>
+                                <p>• X و Y بالمليمتر (مم)</p>
+                                <p>• X موجب = يمين، Y موجب = للأسفل</p>
+                                <p>• حجم الخط بالنقاط، ارتفاع الباركود بالمليمتر</p>
+                            </div>
+
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-right text-[11px]">
+                                    <thead>
+                                        <tr class="bg-slate-200 text-slate-600 border-b">
+                                            <th class="p-1.5">العنصر</th>
+                                            <th class="p-1.5">الحجم/الارتفاع</th>
+                                            <th class="p-1.5">X (مم)</th>
+                                            <th class="p-1.5">Y (مم)</th>
+                                            <th class="p-1.5 text-center">خيارات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-200 font-medium bg-white">
+                                        <tr>
+                                            <td class="p-1.5 font-bold">الباركود</td>
+                                            <td class="p-1.5"><input type="number" value="0" class="w-14 bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-center"></td>
+                                            <td class="p-1.5"><input type="number" value="0" class="w-14 bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-center"></td>
+                                            <td class="p-1.5"><input type="number" value="12" class="w-14 bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-center"></td>
+                                            <td class="p-1.5 text-center">-</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-1.5 font-bold">رقم الليبل</td>
+                                            <td class="p-1.5"><input type="number" value="14" class="w-14 bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-center"></td>
+                                            <td class="p-1.5"><input type="number" value="0" class="w-14 bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-center"></td>
+                                            <td class="p-1.5"><input type="number" value="0" class="w-14 bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-center"></td>
+                                            <td class="p-1.5 text-center"><label class="flex items-center gap-1 justify-center"><input type="checkbox" class="accent-blue-600"> إخفاء</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-1.5 font-bold">اسم الطالب</td>
+                                            <td class="p-1.5"><input type="number" value="14" class="w-14 bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-center"></td>
+                                            <td class="p-1.5"><input type="number" value="0" class="w-14 bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-center"></td>
+                                            <td class="p-1.5"><input type="number" value="-13" class="w-14 bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-center"></td>
+                                            <td class="p-1.5 text-center">-</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-1.5 font-bold">الصف</td>
+                                            <td class="p-1.5"><input type="number" value="13" class="w-14 bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-center"></td>
+                                            <td class="p-1.5"><input type="number" value="0" class="w-14 bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-center"></td>
+                                            <td class="p-1.5"><input type="number" value="-13" class="w-14 bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-center"></td>
+                                            <td class="p-1.5 text-center">-</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-1.5 font-bold">الشعبة</td>
+                                            <td class="p-1.5"><input type="number" value="14" class="w-14 bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-center"></td>
+                                            <td class="p-1.5"><input type="number" value="13" class="w-14 bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-center"></td>
+                                            <td class="p-1.5"><input type="number" value="-13" class="w-14 bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-center"></td>
+                                            <td class="p-1.5 text-center">-</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-1.5 font-bold">رقم الجلوس</td>
+                                            <td class="p-1.5"><input type="number" value="13" class="w-14 bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-center"></td>
+                                            <td class="p-1.5"><input type="number" value="13" class="w-14 bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-center"></td>
+                                            <td class="p-1.5"><input type="number" value="-14" class="w-14 bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-center"></td>
+                                            <td class="p-1.5 text-center">-</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-1.5 font-bold">المادة</td>
+                                            <td class="p-1.5"><input type="number" value="13" class="w-14 bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-center"></td>
+                                            <td class="p-1.5"><input type="number" value="-24" class="w-14 bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-center"></td>
+                                            <td class="p-1.5"><input type="number" value="-17,5" class="w-14 bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-center"></td>
+                                            <td class="p-1.5 text-center">-</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- السكربتات البرمجية الموحدة -->
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            
+            if (sidebar.classList.contains('translate-x-full')) {
+                sidebar.classList.remove('translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        function generateBarcodes() {
+            const tbody = document.getElementById('barcodes-tbody');
+            tbody.innerHTML = `
+                <tr>
+                    <td class="p-2.5">01</td>
+                    <td class="p-2.5">ابو الحسن بهاء عباس</td>
+                    <td class="p-2.5">الأول المتوسط</td>
+                    <td class="p-2.5">أ</td>
+                    <td class="p-2.5">1020</td>
+                    <td class="p-2.5 font-mono">|||||||||||||</td>
+                    <td class="p-2.5">الرياضيات</td>
+                    <td class="p-2.5 font-bold">1</td>
+                </tr>
+                <tr>
+                    <td class="p-2.5">02</td>
+                    <td class="p-2.5">ابو الحسن بهاء عباس</td>
+                    <td class="p-2.5">الأول المتوسط</td>
+                    <td class="p-2.5">أ</td>
+                    <td class="p-2.5">1020</td>
+                    <td class="p-2.5 font-mono">|||||||||||||</td>
+                    <td class="p-2.5">الاسلامية</td>
+                    <td class="p-2.5 font-bold">2</td>
+                </tr>
+                <tr>
+                    <td class="p-2.5">03</td>
+                    <td class="p-2.5">ابو الحسن بهاء عباس</td>
+                    <td class="p-2.5">الأول المتوسط</td>
+                    <td class="p-2.5">أ</td>
+                    <td class="p-2.5">1020</td>
+                    <td class="p-2.5 font-mono">|||||||||||||</td>
+                    <td class="p-2.5">التربية الفنية</td>
+                    <td class="p-2.5 font-bold">3</td>
+                </tr>
+            `;
+            document.getElementById('status-badge').className = "bg-emerald-50 text-emerald-700 px-3 py-1 rounded-xl text-[11px] font-bold";
+            document.getElementById('status-badge').innerText = "تم توليد الرزمة بنجاح";
+            document.getElementById('rows-count').innerText = "Rows: 410 | Missing Barcode: 0";
+        }
+
+        function switchToPrintView() {
+            document.getElementById('main-view').classList.add('hidden');
+            document.getElementById('print-view').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function switchToMainView() {
+            document.getElementById('print-view').classList.add('hidden');
+            document.getElementById('main-view').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function printNow() {
+            alert('جاري إرسال المهام إلى الطابعة الحرارية...');
+        }
+    </script>
+</body>
+</html>

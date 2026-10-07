@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام ادارة المدارس | الطلاب والصفوف</title>
+    <!-- استدعاء Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            DEFAULT: '#1E3A8A',
+                            dark: '#0F172A',
+                            light: '#3B82F6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- خط Cairo الأكاديمي -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- مكتبة SheetJS لقراءة وتصدير ملفات Excel -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        body { font-family: 'Cairo', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex h-screen overflow-hidden text-right" dir="rtl">
+
+    <!-- الغطاء الخلفي عند فتح القائمة -->
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-20 hidden transition-opacity"></div>
+
+     <!-- الشريط الجانبي (Sidebar) الموحد -->
+    <aside id="sidebar" class="fixed inset-y-0 right-0 z-30 w-72 bg-slate-900 text-slate-300 flex flex-col justify-between shadow-xl transform translate-x-full transition-transform duration-300 ease-in-out border-l border-slate-800">
+        <div>
+            <!-- عنوان النظام -->
+            <div class="p-5 text-center border-b border-slate-800 relative">
+                <button onclick="toggleSidebar()" class="absolute left-4 top-4 text-slate-400 hover:text-white text-lg p-1 rounded-lg hover:bg-slate-800 transition">✕</button>
+                <div class="w-10 h-10 bg-blue-600 rounded-xl mx-auto mb-2 flex items-center justify-center text-white font-bold">|||</div>
+                <h2 class="text-sm font-bold text-white">نظام إدارة المدارس</h2>
+                <p class="text-[11px] text-slate-400 mt-1">المبرمجة: نور الهدى رحيم</p>
+            </div>
+            <!-- القائمة الجانبية -->
+            <nav class="p-3 space-y-1 text-xs overflow-y-auto max-h-[calc(100vh-140px)]">
+                <a href="Dashboard.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-300 transition">لوحة التحكم</a>
+                <a href="stud.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-300 transition">الطلاب</a>
+                <a href="table.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-300 transition">الجدول الامتحاني</a>
+                <a href="Barcode.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-300 transition">طباعة باركودات</a>
+                <a href="Grades.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-blue-600 text-white font-bold transition">إدخال الدرجات</a>
+                <a href="Absence.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-300 transition">الغيابات</a>
+                <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-300 transition">التقارير</a>
+                <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-300 transition">الإعدادات</a>
+                <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-300 transition">المستخدمين</a>
+                <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-300 transition">سجل التغييرات</a>
+            </nav>
+        </div>
+        <div class="p-4 border-t border-slate-800 text-center text-xs text-slate-500">الإصدار 1.0.0 &copy; 2026</div>
+    </aside>
+
+    <!-- محتوى الصفحة الرئيسي -->
+    <div class="flex-1 flex flex-col h-screen overflow-y-auto">
+        
+        <!-- الشريط العلوي -->
+        <header class="bg-white shadow-xs px-6 py-3.5 flex justify-between items-center sticky top-0 z-10 border-b border-slate-200">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSidebar()" class="p-2.5 text-slate-700 hover:bg-slate-100 rounded-xl transition border border-slate-200">☰</button>
+                <button class="bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white px-4 py-2 rounded-xl text-xs font-semibold transition border border-rose-100">تسجيل خروج</button>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="text-right">
+                    <h4 class="text-xs font-bold text-slate-800">Administrator - Admin</h4>
+                    <span class="text-[11px] text-slate-500 block">مدير النظام</span>
+                </div>
+                <div class="w-9 h-9 bg-navy text-white rounded-xl flex items-center justify-center font-bold text-sm">م</div>
+            </div>
+        </header>
+
+        <!-- المحتوى الأساسي -->
+        <main class="p-6 space-y-6">
+            
+            <!-- أشرطة التبويبات العلوية -->
+            <div class="flex flex-wrap items-center justify-between bg-white p-4 rounded-2xl shadow-2xs border border-slate-200/80 gap-4">
+                <div class="flex flex-wrap items-center gap-2">
+                    <button onclick="switchTab('students')" id="btn-students" class="px-4 py-2 rounded-xl text-xs font-bold transition border bg-blue-50 text-blue-700 border-blue-200 shadow-2xs">الطلاب</button>
+                    <button onclick="switchTab('classes')" id="btn-classes" class="px-4 py-2 rounded-xl text-xs font-semibold transition border bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100">الصفوف</button>
+                    <button onclick="switchTab('sections')" id="btn-sections" class="px-4 py-2 rounded-xl text-xs font-semibold transition border bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100">الشعب</button>
+                    <button onclick="switchTab('import')" id="btn-import" class="px-4 py-2 rounded-xl text-xs font-semibold transition border bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100">استيراد وتصدير Excel </button>
+                </div>
+                <div class="text-left">
+                    <h2 class="text-sm font-bold text-slate-900">نظام إدارة شؤون الطلاب</h2>
+                    <span class="text-[11px] text-slate-400">التحكم الكامل بالبيانات الأكاديمية</span>
+                </div>
+            </div>
+
+            <!-- 1. قسم الطلاب -->
+            <div id="tab-students" class="tab-content grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-8 bg-white p-5 rounded-2xl shadow-2xs border border-slate-200/80">
+                    <div class="flex items-center justify-between mb-4">
+                        <button onclick="generateBarcodes()" class="bg-amber-500 hover:bg-amber-600 text-white px-3.5 py-2 rounded-xl text-xs font-semibold shadow-2xs transition">توليد باركود للمحدد 🏷️</button>
+                        <h3 class="text-sm font-bold text-slate-900">قائمة الطلاب</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-right text-xs">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-500 border-b border-slate-200">
+                                    <th class="p-3 text-center"><input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)" class="accent-blue-600 rounded"></th>
+                                    <th class="p-3">اسم الطالب</th>
+                                    <th class="p-3">الصف</th>
+                                    <th class="p-3">الشعبة</th>
+                                    <th class="p-3">رقم الجلوس</th>
+                                    <th class="p-3">الباركود</th>
+                                    <th class="p-3 text-center">الحالة</th>
+                                </tr>
+                            </thead>
+                            <tbody id="students-table-body" class="divide-y divide-slate-100">
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3 text-center"><input type="checkbox" class="student-checkbox accent-blue-600 rounded"></td>
+                                    <td class="p-3 font-semibold text-slate-800">أحمد محمد علي</td>
+                                    <td class="p-3 text-slate-600">الأول المتوسط</td>
+                                    <td class="p-3 text-slate-600">أ</td>
+                                    <td class="p-3 text-slate-600">1001</td>
+                                    <td class="p-3 font-mono text-blue-600">*BAR-1001*</td>
+                                    <td class="p-3 text-center"><span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded text-[10px]">فعال</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="lg:col-span-4 bg-white p-5 rounded-2xl shadow-2xs border border-slate-200/80 h-fit">
+                    <h3 class="text-sm font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">بيانات الطالب</h3>
+                    <div class="space-y-3 text-xs">
+                        <div><label class="block font-semibold text-slate-600 mb-1">الاسم الكامل</label><input type="text" id="inp-name" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2"></div>
+                        <div><label class="block font-semibold text-slate-600 mb-1">الصف</label><input type="text" id="inp-class" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2"></div>
+                        <div><label class="block font-semibold text-slate-600 mb-1">الشعبة</label><input type="text" id="inp-section" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2"></div>
+                        <div><label class="block font-semibold text-slate-600 mb-1">رقم الجلوس</label><input type="text" id="inp-seat" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2"></div>
+                        <div><label class="block font-semibold text-slate-600 mb-1">الباركود</label><input type="text" id="inp-barcode" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2"></div>
+                        <div><label class="block font-semibold text-slate-600 mb-1">ملاحظات</label><textarea id="inp-notes" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 h-16"></textarea></div>
+                        <button onclick="saveStudent()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl font-semibold shadow-2xs transition">حفظ الطالب</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. قسم الصفوف -->
+            <div id="tab-classes" class="tab-content hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-8 bg-white p-5 rounded-2xl shadow-2xs border border-slate-200/80">
+                    <h3 class="text-sm font-bold text-slate-900 mb-4">قائمة الصفوف الدراسية</h3>
+                    <table class="w-full text-right text-xs">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 border-b border-slate-200">
+                                <th class="p-3">رقم المرحلة</th>
+                                <th class="p-3">اسم الصف</th>
+                                <th class="p-3">الفرع</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr><td class="p-3">1</td><td class="p-3 font-semibold">الأول المتوسط</td><td class="p-3">-</td></tr>
+                            <tr><td class="p-3">4</td><td class="p-3 font-semibold">الرابع العلمي</td><td class="p-3">علمي</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="lg:col-span-4 bg-white p-5 rounded-2xl shadow-2xs border border-slate-200/80 h-fit">
+                    <h3 class="text-sm font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">بيانات الصف</h3>
+                    <div class="space-y-3 text-xs">
+                        <div><label class="block font-semibold text-slate-600 mb-1">رقم المرحلة</label><input type="text" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2"></div>
+                        <div><label class="block font-semibold text-slate-600 mb-1">اسم الصف</label><input type="text" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2"></div>
+                        <div><label class="block font-semibold text-slate-600 mb-1">الفرع</label><input type="text" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2" placeholder="اختياري (علمي/أدبي)"></div>
+                        <div class="flex gap-2 pt-2">
+                            <button class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-xl font-semibold transition">حفظ</button>
+                            <button class="flex-1 bg-sky-500 hover:bg-sky-600 text-white py-2 rounded-xl font-semibold transition">تعديل</button>
+                            <button class="flex-1 bg-rose-500 hover:bg-rose-600 text-white py-2 rounded-xl font-semibold transition">حذف</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. قسم الشعب -->
+            <div id="tab-sections" class="tab-content hidden bg-white p-6 rounded-2xl shadow-2xs border border-slate-200/80 space-y-6">
+                <h3 class="text-sm font-bold text-slate-900 border-b pb-2">فلترة وعرض الشعب الدراسية</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                    <div>
+                        <label class="block font-semibold text-slate-600 mb-1">اختر الصف</label>
+                        <select id="filter-class" onchange="filterSections()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
+                            <option value="">-- اختر الصف الدراسي --</option>
+                            <option value="الأول المتوسط">الأول المتوسط</option>
+                            <option value="الثاني المتوسط">الثاني المتوسط</option>
+                            <option value="الرابع العلمي">الرابع العلمي</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-600 mb-1">اختر الشعبة</label>
+                        <select id="filter-section" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
+                            <option value="">-- اختر الشعبة --</option>
+                            <option value="أ">الشعبة أ</option>
+                            <option value="ب">الشعبة ب</option>
+                            <option value="ج">الشعبة ج</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="p-4 bg-blue-50/50 rounded-xl border border-blue-100 text-xs text-blue-800">
+                    💡 يتم تحديث نتائج الطلاب تلقائياً عند اختيار الصف والشعبة وتطبيق الفلترة المتقدمة.
+                </div>
+            </div>
+
+            <!-- 4. قسم استيراد وتصدير Excel -->
+            <div id="tab-import" class="tab-content hidden bg-white p-6 rounded-2xl shadow-2xs border border-slate-200/80 space-y-5">
+                <h3 class="text-sm font-bold text-slate-900 border-b pb-2">إدارة استيراد وتصدير بيانات الطلاب (Excel)</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- صندوق الاستيراد -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                        <h4 class="text-xs font-bold text-slate-800">استيراد بيانات الطلاب من ملف Excel</h4>
+                        <div class="flex flex-wrap items-center gap-2 text-xs">
+                            <button onclick="downloadTemplate()" class="bg-slate-700 hover:bg-slate-800 text-white px-3 py-2 rounded-xl font-semibold transition">تحميل القالب 📥</button>
+                            <input type="file" id="excelFile" accept=".xlsx, .xls, .csv" class="file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 border border-slate-200 rounded-xl bg-white text-xs w-full sm:w-auto">
+                        </div>
+                        <button onclick="importExcelData()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-xl font-semibold text-xs transition shadow-2xs">تأكيد واستيراد الملف إلى الجدول </button>
+                        <div id="import-status" class="text-[11px] text-slate-500 font-medium">الحالة: بانتظار اختيار الملف...</div>
+                    </div>
+
+                    <!-- صندوق التصدير -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                        <h4 class="text-xs font-bold text-slate-800">تصدير بيانات الطلاب الحالية</h4>
+                        <p class="text-[11px] text-slate-500">قم بتنزيل كافة بيانات الطلاب المسجلة في الجدول الحالي على شكل ملف Excel جاهز.</p>
+                        <button onclick="exportStudentsToExcel()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl font-semibold text-xs transition shadow-2xs mt-4">تصدير بيانات الطلاب إلى Excel </button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- أكواد التحكم التفاعلية -->
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            sidebar.classList.toggle('translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+
+            ['students', 'classes', 'sections', 'import'].forEach(id => {
+                const btn = document.getElementById('btn-' + id);
+                if(id === tabId) {
+                    btn.className = "px-4 py-2 rounded-xl text-xs font-bold transition border bg-blue-50 text-blue-700 border-blue-200 shadow-2xs";
+                } else {
+                    btn.className = "px-4 py-2 rounded-xl text-xs font-semibold transition border bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100";
+                }
+            });
+        }
+
+        function toggleSelectAll(master) {
+            const checkboxes = document.querySelectorAll('.student-checkbox');
+            checkboxes.forEach(cb => cb.checked = master.checked);
+        }
+
+        function saveStudent() {
+            const name = document.getElementById('inp-name').value;
+            const cls = document.getElementById('inp-class').value;
+            const sec = document.getElementById('inp-section').value;
+            const seat = document.getElementById('inp-seat').value;
+            const barcode = document.getElementById('inp-barcode').value;
+
+            if(!name) {
+                alert('يرجى إدخال اسم الطالب الكامل على الأقل');
+                return;
+            }
+
+            const tbody = document.getElementById('students-table-body');
+            const row = document.createElement('tr');
+            row.className = "hover:bg-slate-50";
+            row.innerHTML = `
+                <td class="p-3 text-center"><input type="checkbox" class="student-checkbox accent-blue-600 rounded"></td>
+                <td class="p-3 font-semibold text-slate-800">${name}</td>
+                <td class="p-3 text-slate-600">${cls || '-'}</td>
+                <td class="p-3 text-slate-600">${sec || '-'}</td>
+                <td class="p-3 text-slate-600">${seat || '-'}</td>
+                <td class="p-3 font-mono text-blue-600">${barcode || '*AUTO*'}</td>
+                <td class="p-3 text-center"><span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded text-[10px]">فعال</span></td>
+            `;
+            tbody.appendChild(row);
+            alert('تم حفظ وتحديث بيانات الطالب بنجاح وإضافته إلى واجهة الطلاب!');
+            switchTab('students');
+        }
+
+        function generateBarcodes() {
+            const checked = document.querySelectorAll('.student-checkbox:checked');
+            if(checked.length === 0) {
+                alert('يرجى تحديد طالب واحد على الأقل من الجدول لتوليد الباركود.');
+                return;
+            }
+            alert(`تم توليد الباركودات بنجاح لـ ${checked.length} من الطلاب المحددين!`);
+        }
+
+        // --- وظائف تصدير واستيراد Excel ---
+
+        function exportStudentsToExcel() {
+            const table = document.getElementById('students-table-body');
+            const rows = table.querySelectorAll('tr');
+            
+            if (rows.length === 0 || (rows.length === 1 && rows[0].innerText.includes('لا توجد'))) {
+                alert('لا توجد بيانات طلاب لتصديرها حالياً!');
+                return;
+            }
+
+            let dataToExport = [];
+            rows.forEach((row, index) => {
+                const cols = row.querySelectorAll('td');
+                if (cols.length >= 6) {
+                    dataToExport.push({
+                        "ت": index + 1,
+                        "اسم الطالب": cols[1].innerText.trim(),
+                        "الصف": cols[2].innerText.trim(),
+                        "الشعبة": cols[3].innerText.trim(),
+                        "رقم الجلوس": cols[4].innerText.trim(),
+                        "الباركود": cols[5].innerText.trim(),
+                        "الحالة": cols[6] ? cols[6].innerText.trim() : 'فعال'
+                    });
+                }
+            });
+
+            const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "الطلاب");
+            XLSX.writeFile(workbook, "students_data.xlsx");
+        }
+
+        function downloadTemplate() {
+            let templateData = [
+                { "اسم الطالب": "أحمد علي حسن", "الصف": "الأول المتوسط", "الشعبة": "أ", "رقم الجلوس": "1001", "الباركود": "*BAR-1001*" }
+            ];
+            const worksheet = XLSX.utils.json_to_sheet(templateData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "قالب_الطلاب");
+            XLSX.writeFile(workbook, "student_template.xlsx");
+        }
+
+        function importExcelData() {
+            const fileInput = document.getElementById('excelFile');
+            const statusDiv = document.getElementById('import-status');
+
+            if (fileInput.files.length === 0) {
+                alert('الرجاء اختيار ملف Excel أولاً.');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const jsonRows = XLSX.utils.sheet_to_json(worksheet);
+
+                    if (jsonRows.length === 0) {
+                        alert('الملف المرفوع فارغ أو لا يحتوي على بيانات صالحة.');
+                        return;
+                    }
+
+                    const tbody = document.getElementById('students-table-body');
+                    let addedCount = 0;
+
+                    jsonRows.forEach(row => {
+                        const name = row['اسم الطالب'] || row['Name'] || row['الاسم'] || '';
+                        const cls = row['الصف'] || row['Class'] || '-';
+                        const sec = row['الشعبة'] || row['Section'] || '-';
+                        const seat = row['رقم الجلوس'] || row['Seat'] || '-';
+                        const barcode = row['الباركود'] || row['Barcode'] || '*AUTO*';
+
+                        if (name) {
+                            const tr = document.createElement('tr');
+                            tr.className = "hover:bg-slate-50 bg-emerald-50/20";
+                            tr.innerHTML = `
+                                <td class="p-3 text-center"><input type="checkbox" class="student-checkbox accent-blue-600 rounded"></td>
+                                <td class="p-3 font-semibold text-slate-800">${name}</td>
+                                <td class="p-3 text-slate-600">${cls}</td>
+                                <td class="p-3 text-slate-600">${sec}</td>
+                                <td class="p-3 text-slate-600">${seat}</td>
+                                <td class="p-3 font-mono text-blue-600">${barcode}</td>
+                                <td class="p-3 text-center"><span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded text-[10px]">مستورد</span></td>
+                            `;
+                            tbody.appendChild(tr);
+                            addedCount++;
+                        }
+                    });
+
+                    statusDiv.innerText = `حالة الاستيراد: تمت بنجاح! تم إدراج ${addedCount} طالب جديد إلى الجدول.`;
+                    alert(`تم استيراد ${addedCount} طالباً بنجاح وانتقلوا إلى جدول الطلاب.`);
+                    switchTab('students');
+
+                } catch (error) {
+                    console.error(error);
+                    alert('حدث خطأ أثناء قراءة الملف. تأكد من أن الملف بصيغة Excel صالحة.');
+                    statusDiv.innerText = 'حالة الاستيراد: فشل في قراءة الملف.';
+                }
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+
+        function filterSections() {
+            const cls = document.getElementById('filter-class').value;
+            const sec = document.getElementById('filter-section').value;
+            if(cls && sec) {
+                console.log(`تم تطبيق الفلترة على الصف: ${cls} والشعبة: ${sec}`);
+            }
+        }
+    </script>
+</body>
+</html>

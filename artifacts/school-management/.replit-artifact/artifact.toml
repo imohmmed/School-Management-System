@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "نظام إدارة المدارس"
+description = "تشغيل واجهة نظام إدارة المدارس العربية المرفقة، بما فيها لوحة التحكم وصفحات الطلاب والدرجات والغياب والجدول والتقارير."
+version = "1.0.0"
+id = "artifacts/school-management"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23826
+
+[services.development]
+run = "pnpm --filter @workspace/school-management run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/school-management", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/school-management/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23826"
+BASE_PATH = "/"
