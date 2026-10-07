@@ -1,36 +1,1452 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
+  # Keep this title stable: generated package paths depend on it.
   title: Api
-  version: 0.1.0
-  description: API specification
+  version: 1.0.0
+  description: School administration API
 servers:
   - url: /api
-    description: Base API path
+    description: Same-origin API
 tags:
+  - name: auth
+  - name: dashboard
+  - name: classes
+  - name: students
+  - name: subjects
+  - name: exams
+  - name: grades
+  - name: attendance
+  - name: reports
+  - name: users
+  - name: settings
+  - name: activity
   - name: health
-    description: Health operations
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
-      summary: Health check
-      description: Returns server health status
+      summary: Check API health
       responses:
         "200":
-          description: Healthy
+          description: API is available
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /setup/status:
+    get:
+      operationId: getSetupStatus
+      tags: [auth]
+      summary: Check whether the first administrator has been created
+      responses:
+        "200":
+          description: First-run setup status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SetupStatus"
+  /me:
+    get:
+      operationId: getCurrentUser
+      tags: [auth]
+      summary: Get the signed-in school account and role
+      responses:
+        "200":
+          description: Current account
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SchoolUser"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /dashboard:
+    get:
+      operationId: getDashboard
+      tags: [dashboard]
+      summary: Get live school overview metrics
+      responses:
+        "200":
+          description: Dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /classes:
+    get:
+      operationId: listClasses
+      tags: [classes]
+      summary: List school classes
+      responses:
+        "200":
+          description: Class list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SchoolClass"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+    post:
+      operationId: createClass
+      tags: [classes]
+      summary: Create a class
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClassInput"
+      responses:
+        "201":
+          description: Created class
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SchoolClass"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /classes/{id}:
+    patch:
+      operationId: updateClass
+      tags: [classes]
+      summary: Update a class
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClassInput"
+      responses:
+        "200":
+          description: Updated class
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SchoolClass"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+    delete:
+      operationId: deleteClass
+      tags: [classes]
+      summary: Delete a class with no enrolled students
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "204":
+          description: Class deleted
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /students:
+    get:
+      operationId: listStudents
+      tags: [students]
+      summary: Search and filter the student register
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: classId
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+        - name: active
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: Student list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Student"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+    post:
+      operationId: createStudent
+      tags: [students]
+      summary: Enroll a student
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StudentInput"
+      responses:
+        "201":
+          description: Created student
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Student"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /students/{id}:
+    patch:
+      operationId: updateStudent
+      tags: [students]
+      summary: Update student details
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StudentInput"
+      responses:
+        "200":
+          description: Updated student
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Student"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+    delete:
+      operationId: archiveStudent
+      tags: [students]
+      summary: Archive a student without deleting historical records
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "204":
+          description: Student archived
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /barcode/{code}:
+    get:
+      operationId: findStudentByBarcode
+      tags: [students]
+      summary: Find an enrolled student by barcode or student number
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 100
+      responses:
+        "200":
+          description: Matching student
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Student"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /subjects:
+    get:
+      operationId: listSubjects
+      tags: [subjects]
+      summary: List subjects, optionally for one class
+      parameters:
+        - name: classId
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "200":
+          description: Subject list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Subject"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+    post:
+      operationId: createSubject
+      tags: [subjects]
+      summary: Add a subject to a class
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubjectInput"
+      responses:
+        "201":
+          description: Created subject
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subject"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /subjects/{id}:
+    patch:
+      operationId: updateSubject
+      tags: [subjects]
+      summary: Update a subject
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubjectInput"
+      responses:
+        "200":
+          description: Updated subject
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subject"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+    delete:
+      operationId: deleteSubject
+      tags: [subjects]
+      summary: Delete a subject with no exam history
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "204":
+          description: Subject deleted
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /exam-sessions:
+    get:
+      operationId: listExamSessions
+      tags: [exams]
+      summary: List exam sessions
+      responses:
+        "200":
+          description: Exam sessions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ExamSession"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+    post:
+      operationId: createExamSession
+      tags: [exams]
+      summary: Create an exam session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExamSessionInput"
+      responses:
+        "201":
+          description: Created exam session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExamSession"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /exam-sessions/{id}:
+    patch:
+      operationId: updateExamSession
+      tags: [exams]
+      summary: Update an exam session
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExamSessionInput"
+      responses:
+        "200":
+          description: Updated exam session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExamSession"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+    delete:
+      operationId: deleteExamSession
+      tags: [exams]
+      summary: Delete a session with no exams
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "204":
+          description: Session deleted
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /exams:
+    get:
+      operationId: listExams
+      tags: [exams]
+      summary: List scheduled exams
+      parameters:
+        - name: sessionId
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+        - name: classId
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "200":
+          description: Exam schedule
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Exam"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+    post:
+      operationId: createExam
+      tags: [exams]
+      summary: Schedule an exam
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExamInput"
+      responses:
+        "201":
+          description: Created exam
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Exam"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /exams/{id}:
+    patch:
+      operationId: updateExam
+      tags: [exams]
+      summary: Update a scheduled exam
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExamInput"
+      responses:
+        "200":
+          description: Updated exam
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Exam"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+    delete:
+      operationId: deleteExam
+      tags: [exams]
+      summary: Delete an exam with no saved grades
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "204":
+          description: Exam deleted
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /grades:
+    get:
+      operationId: listGrades
+      tags: [grades]
+      summary: List saved grades for an exam or class
+      parameters:
+        - name: examId
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+        - name: classId
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "200":
+          description: Grade records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Grade"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /grades/bulk:
+    put:
+      operationId: saveGrades
+      tags: [grades]
+      summary: Save or update grades for one exam
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BulkGradesInput"
+      responses:
+        "200":
+          description: Saved grade records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Grade"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /attendance:
+    get:
+      operationId: listAttendance
+      tags: [attendance]
+      summary: List attendance records by date and class
+      parameters:
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: classId
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "200":
+          description: Attendance records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Attendance"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+    post:
+      operationId: recordAttendance
+      tags: [attendance]
+      summary: Record or update a student's attendance status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AttendanceInput"
+      responses:
+        "201":
+          description: Recorded attendance
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Attendance"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /attendance/{id}:
+    delete:
+      operationId: deleteAttendance
+      tags: [attendance]
+      summary: Remove an attendance entry
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "204":
+          description: Attendance entry removed
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /reports/attendance:
+    get:
+      operationId: getAttendanceReport
+      tags: [reports]
+      summary: Build an attendance report for a date range
+      parameters:
+        - name: from
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: classId
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "200":
+          description: Attendance report
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AttendanceReport"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /reports/grades:
+    get:
+      operationId: getGradesReport
+      tags: [reports]
+      summary: Build a grade report
+      parameters:
+        - name: sessionId
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+        - name: classId
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+        - name: subjectId
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "200":
+          description: Grade report
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GradesReport"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /users:
+    get:
+      operationId: listUsers
+      tags: [users]
+      summary: List staff accounts and pending invitations
+      responses:
+        "200":
+          description: School users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SchoolUser"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /users/invitations:
+    post:
+      operationId: inviteUser
+      tags: [users]
+      summary: Invite a staff member with a school role
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InviteUserInput"
+      responses:
+        "201":
+          description: Invitation created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SchoolUser"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /users/{id}:
+    patch:
+      operationId: updateUser
+      tags: [users]
+      summary: Change a user's role or active status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserInput"
+      responses:
+        "200":
+          description: Updated school user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SchoolUser"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+    delete:
+      operationId: removeUser
+      tags: [users]
+      summary: Revoke school access for a staff account
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: School access revoked
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /settings:
+    get:
+      operationId: getSettings
+      tags: [settings]
+      summary: Read school settings
+      responses:
+        "200":
+          description: Current school settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SchoolSettings"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+    put:
+      operationId: updateSettings
+      tags: [settings]
+      summary: Save school settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SchoolSettingsInput"
+      responses:
+        "200":
+          description: Saved school settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SchoolSettings"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /activity:
+    get:
+      operationId: listActivity
+      tags: [activity]
+      summary: List recent school changes
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 30
+      responses:
+        "200":
+          description: Recent audit records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityRecord"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
 components:
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+  responses:
+    BadRequest:
+      description: The submitted data is invalid
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiError"
+    Unauthorized:
+      description: Sign in is required
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiError"
+    Forbidden:
+      description: This account does not have permission
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiError"
+    NotFound:
+      description: The requested record does not exist
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiError"
   schemas:
+    ApiError:
+      type: object
+      properties:
+        message:
+          type: string
+      required: [message]
     HealthStatus:
       type: object
       properties:
         status:
           type: string
+      required: [status]
+    SetupStatus:
+      type: object
+      properties:
+        initialized:
+          type: boolean
+      required: [initialized]
+    Role:
+      type: string
+      enum: [administrator, teacher, viewer, pending]
+    UserStatus:
+      type: string
+      enum: [active, invited, suspended]
+    AttendanceStatus:
+      type: string
+      enum: [present, absent, late, excused]
+    SchoolClass:
+      type: object
+      properties:
+        id:
+          type: integer
+        gradeLevel:
+          type: string
+        section:
+          type: string
+        academicYear:
+          type: string
+        room:
+          type: [string, "null"]
+        active:
+          type: boolean
+        studentCount:
+          type: integer
+      required: [id, gradeLevel, section, academicYear, room, active, studentCount]
+    ClassInput:
+      type: object
+      properties:
+        gradeLevel:
+          type: string
+          minLength: 1
+          maxLength: 100
+        section:
+          type: string
+          minLength: 1
+          maxLength: 30
+        academicYear:
+          type: string
+          minLength: 4
+          maxLength: 30
+        room:
+          type: [string, "null"]
+          maxLength: 100
+        active:
+          type: boolean
+      required: [gradeLevel, section, academicYear, active]
+    Student:
+      type: object
+      properties:
+        id:
+          type: integer
+        fullName:
+          type: string
+        studentCode:
+          type: string
+        barcode:
+          type: string
+        gender:
+          type: [string, "null"]
+        dateOfBirth:
+          type: [string, "null"]
+          format: date
+        guardianName:
+          type: [string, "null"]
+        guardianPhone:
+          type: [string, "null"]
+        address:
+          type: [string, "null"]
+        classId:
+          type: integer
+        className:
+          type: string
+        section:
+          type: string
+        active:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
       required:
-        - status
-
+        [id, fullName, studentCode, barcode, gender, dateOfBirth, guardianName, guardianPhone, address, classId, className, section, active, createdAt]
+    StudentInput:
+      type: object
+      properties:
+        fullName:
+          type: string
+          minLength: 2
+          maxLength: 160
+        studentCode:
+          type: string
+          minLength: 1
+          maxLength: 60
+        gender:
+          type: [string, "null"]
+          maxLength: 30
+        dateOfBirth:
+          type: [string, "null"]
+          format: date
+        guardianName:
+          type: [string, "null"]
+          maxLength: 160
+        guardianPhone:
+          type: [string, "null"]
+          maxLength: 50
+        address:
+          type: [string, "null"]
+          maxLength: 500
+        classId:
+          type: integer
+          minimum: 1
+        active:
+          type: boolean
+      required: [fullName, studentCode, classId, active]
+    Subject:
+      type: object
+      properties:
+        id:
+          type: integer
+        classId:
+          type: integer
+        className:
+          type: string
+        section:
+          type: string
+        name:
+          type: string
+        code:
+          type: [string, "null"]
+        totalMarks:
+          type: number
+        passingMarks:
+          type: number
+      required: [id, classId, className, section, name, code, totalMarks, passingMarks]
+    SubjectInput:
+      type: object
+      properties:
+        classId:
+          type: integer
+          minimum: 1
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        code:
+          type: [string, "null"]
+          maxLength: 40
+        totalMarks:
+          type: number
+          minimum: 1
+        passingMarks:
+          type: number
+          minimum: 0
+      required: [classId, name, totalMarks, passingMarks]
+    ExamSession:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        academicYear:
+          type: string
+        active:
+          type: boolean
+      required: [id, name, academicYear, active]
+    ExamSessionInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        academicYear:
+          type: string
+          minLength: 4
+          maxLength: 30
+        active:
+          type: boolean
+      required: [name, academicYear, active]
+    Exam:
+      type: object
+      properties:
+        id:
+          type: integer
+        sessionId:
+          type: integer
+        sessionName:
+          type: string
+        classId:
+          type: integer
+        className:
+          type: string
+        section:
+          type: string
+        subjectId:
+          type: integer
+        subjectName:
+          type: string
+        examDate:
+          type: string
+          format: date
+        totalMarks:
+          type: number
+      required: [id, sessionId, sessionName, classId, className, section, subjectId, subjectName, examDate, totalMarks]
+    ExamInput:
+      type: object
+      properties:
+        sessionId:
+          type: integer
+          minimum: 1
+        classId:
+          type: integer
+          minimum: 1
+        subjectId:
+          type: integer
+          minimum: 1
+        examDate:
+          type: string
+          format: date
+        totalMarks:
+          type: number
+          minimum: 1
+      required: [sessionId, classId, subjectId, examDate, totalMarks]
+    Grade:
+      type: object
+      properties:
+        id:
+          type: integer
+        examId:
+          type: integer
+        studentId:
+          type: integer
+        studentName:
+          type: string
+        studentCode:
+          type: string
+        className:
+          type: string
+        subjectName:
+          type: string
+        examTitle:
+          type: string
+        score:
+          type: number
+        maxScore:
+          type: number
+        note:
+          type: [string, "null"]
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, examId, studentId, studentName, studentCode, className, subjectName, examTitle, score, maxScore, note, updatedAt]
+    GradeInput:
+      type: object
+      properties:
+        studentId:
+          type: integer
+          minimum: 1
+        score:
+          type: number
+          minimum: 0
+        note:
+          type: [string, "null"]
+          maxLength: 500
+      required: [studentId, score]
+    BulkGradesInput:
+      type: object
+      properties:
+        examId:
+          type: integer
+          minimum: 1
+        grades:
+          type: array
+          items:
+            $ref: "#/components/schemas/GradeInput"
+      required: [examId, grades]
+    Attendance:
+      type: object
+      properties:
+        id:
+          type: integer
+        studentId:
+          type: integer
+        studentName:
+          type: string
+        studentCode:
+          type: string
+        barcode:
+          type: string
+        classId:
+          type: integer
+        className:
+          type: string
+        section:
+          type: string
+        attendanceDate:
+          type: string
+          format: date
+        status:
+          $ref: "#/components/schemas/AttendanceStatus"
+        note:
+          type: [string, "null"]
+      required: [id, studentId, studentName, studentCode, barcode, classId, className, section, attendanceDate, status, note]
+    AttendanceInput:
+      type: object
+      properties:
+        studentId:
+          type: integer
+          minimum: 1
+        barcode:
+          type: string
+          minLength: 1
+          maxLength: 100
+        attendanceDate:
+          type: string
+          format: date
+        status:
+          $ref: "#/components/schemas/AttendanceStatus"
+        note:
+          type: [string, "null"]
+          maxLength: 500
+      required: [attendanceDate, status]
+    SchoolUser:
+      type: object
+      properties:
+        id:
+          type: string
+        clerkUserId:
+          type: [string, "null"]
+        email:
+          type: string
+          format: email
+        fullName:
+          type: string
+        role:
+          $ref: "#/components/schemas/Role"
+        status:
+          $ref: "#/components/schemas/UserStatus"
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, clerkUserId, email, fullName, role, status, createdAt]
+    InviteUserInput:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        fullName:
+          type: string
+          minLength: 2
+          maxLength: 160
+        role:
+          type: string
+          enum: [administrator, teacher, viewer]
+      required: [email, fullName, role]
+    UpdateUserInput:
+      type: object
+      properties:
+        role:
+          type: string
+          enum: [administrator, teacher, viewer]
+        status:
+          type: string
+          enum: [active, suspended]
+      minProperties: 1
+    SchoolSettings:
+      type: object
+      properties:
+        schoolName:
+          type: string
+        academicYear:
+          type: string
+        gradeScaleMax:
+          type: number
+        passingPercent:
+          type: number
+        barcodePrefix:
+          type: string
+      required: [schoolName, academicYear, gradeScaleMax, passingPercent, barcodePrefix]
+    SchoolSettingsInput:
+      type: object
+      properties:
+        schoolName:
+          type: string
+          minLength: 2
+          maxLength: 160
+        academicYear:
+          type: string
+          minLength: 4
+          maxLength: 30
+        gradeScaleMax:
+          type: number
+          minimum: 1
+          maximum: 1000
+        passingPercent:
+          type: number
+          minimum: 0
+          maximum: 100
+        barcodePrefix:
+          type: string
+          maxLength: 30
+      required: [schoolName, academicYear, gradeScaleMax, passingPercent, barcodePrefix]
+    ActivityRecord:
+      type: object
+      properties:
+        id:
+          type: integer
+        actorName:
+          type: string
+        action:
+          type: string
+        entity:
+          type: string
+        recordId:
+          type: [string, "null"]
+        details:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, actorName, action, entity, recordId, details, createdAt]
+    DashboardSummary:
+      type: object
+      properties:
+        classCount:
+          type: integer
+        studentCount:
+          type: integer
+        absentToday:
+          type: integer
+        gradeCompletionPercent:
+          type: number
+        upcomingExams:
+          type: array
+          items:
+            $ref: "#/components/schemas/Exam"
+        recentActivity:
+          type: array
+          items:
+            $ref: "#/components/schemas/ActivityRecord"
+      required: [classCount, studentCount, absentToday, gradeCompletionPercent, upcomingExams, recentActivity]
+    AttendanceReport:
+      type: object
+      properties:
+        from:
+          type: string
+          format: date
+        to:
+          type: string
+          format: date
+        totalStudents:
+          type: integer
+        absentCount:
+          type: integer
+        presentCount:
+          type: integer
+        lateCount:
+          type: integer
+        excusedCount:
+          type: integer
+        records:
+          type: array
+          items:
+            $ref: "#/components/schemas/Attendance"
+      required: [from, to, totalStudents, absentCount, presentCount, lateCount, excusedCount, records]
+    GradesReport:
+      type: object
+      properties:
+        average:
+          type: number
+        passCount:
+          type: integer
+        failCount:
+          type: integer
+        records:
+          type: array
+          items:
+            $ref: "#/components/schemas/Grade"
+      required: [average, passCount, failCount, records]
