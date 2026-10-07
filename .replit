@@ -21,3 +21,8 @@ timeoutMs = 20000
 
 [nix]
 channel = "stable-25_05"
+
+[userenv]
+
+[userenv.shared]
+SCHOOL_OWNER_EMAILS = "noorrahim510@gmail.com"

@@ -194,6 +194,8 @@ function ClerkProviderWithRoutes() {
       appearance={clerkAppearance}
       signInUrl={`${basePath}/sign-in`}
       signUpUrl={`${basePath}/sign-up`}
+      signInForceRedirectUrl={`${basePath}/dashboard`}
+      signUpForceRedirectUrl={`${basePath}/dashboard`}
       localization={localization}
       routerPush={(to) => setLocation(stripBase(to))}
       routerReplace={(to) => setLocation(stripBase(to), { replace: true })}

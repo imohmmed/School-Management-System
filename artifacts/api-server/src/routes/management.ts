@@ -10,6 +10,7 @@ import {
   InviteUserBody, UpdateUserBody, UpdateSettingsBody, ListActivityQueryParams,
 } from "@workspace/api-zod";
 import { claimOrBindAccount, requireRole } from "../middlewares/schoolAuth";
+import { isConfiguredOwnerEmail } from "../lib/owner-access";
 import { getClerkProxyHost } from "../middlewares/clerkProxyMiddleware";
 import { ApiProblem, audit, baghdadToday, currentAccount, parse, queryValues, settings, userOutput } from "../lib/school-core";
 import { activity, attendance, classes, exams, grades, studentCount } from "../lib/school-queries";
@@ -152,6 +153,10 @@ router.patch("/users/:id", admin, async (req, res) => {
     await tx.execute(sql`select pg_advisory_xact_lock(6719342027)`);
     const [existing] = await tx.select().from(schoolUsersTable).where(eq(schoolUsersTable.id, id)).for("update");
     if (!existing) throw new ApiProblem(404, "المستخدم غير موجود");
+    if (isConfiguredOwnerEmail(existing.email) &&
+        ((body.role && body.role !== "administrator") || body.status === "suspended")) {
+      throw new ApiProblem(400, "لا يمكن إيقاف حساب مالك النظام المعيّن أو إزالة صلاحية إدارته");
+    }
     if (id === actor.id && ((body.role && body.role !== "administrator") || body.status === "suspended")) throw new ApiProblem(400, "لا يمكنك إيقاف حسابك أو إزالة صلاحية إدارتك من هذه الشاشة");
     const [admins] = await tx.select({ total: count() }).from(schoolUsersTable).where(and(eq(schoolUsersTable.role, "administrator"), eq(schoolUsersTable.status, "active")));
     if (existing.role === "administrator" && existing.status === "active" && admins!.total <= 1 &&
@@ -171,6 +176,7 @@ router.delete("/users/:id", admin, async (req, res) => {
     await tx.execute(sql`select pg_advisory_xact_lock(6719342027)`);
     const [existing] = await tx.select().from(schoolUsersTable).where(eq(schoolUsersTable.id, id)).for("update");
     if (!existing) throw new ApiProblem(404, "المستخدم غير موجود");
+    if (isConfiguredOwnerEmail(existing.email)) throw new ApiProblem(400, "لا يمكن إلغاء صلاحية مالك النظام المعيّن");
     const [admins] = await tx.select({ total: count() }).from(schoolUsersTable).where(and(eq(schoolUsersTable.role, "administrator"), eq(schoolUsersTable.status, "active")));
     if (existing.role === "administrator" && existing.status === "active" && admins!.total <= 1) throw new ApiProblem(400, "لا يمكن إلغاء صلاحية مدير المدرسة الوحيد");
     if (existing.clerkInvitationId && existing.status === "invited") {

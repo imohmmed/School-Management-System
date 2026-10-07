@@ -1,3 +1,4 @@
 - [API generation](api-generation.md) — request bodies should use named schemas to avoid Zod/TypeScript duplicate operation-body exports.
 - [Integration testing](integration-testing.md) — complete Clerk test handshakes; compile Node tests outside node_modules.
 - [Dependency safety](dependency-safety.md) — upstream SheetJS fixes can still match open-ended npm advisory ranges; preserve workspace safeguards when installing.
+- [Additional ownership](additional-ownership.md) — explicitly designated owners join without invitation; they supplement, not replace, the existing administrator.
